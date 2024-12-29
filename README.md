@@ -1,4 +1,6 @@
 # Windows_Deployment_Automation
-Scripts and answer files to automate worsktation deployment for Windows 10 and 11 operating systems in a professional setting. 
+Powershell script(s) to run at initial logon for new windows 11 machines in workgroup setting. See latest version for most current iteration. 
 
-Currently this is set for my use only, until I'm confident on security concerns for posting scripts publicly. NO confidential information is listed in any scripts listed on this repository, ever. 
+Notes: this is primarily for internal use, but has no confidential or identifying information other than USA and EST & CST time zones. 
+
+*** NO confidential information is listed in any scripts listed on this repository, ever. ***
