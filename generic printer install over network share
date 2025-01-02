@@ -1,0 +1,50 @@
+#variables for Printer #1
+$printerName1 = "Printer 1"
+$portName1 = "IP_#.#.#.#"
+$portAddress1 = "#.#.#.#"
+
+#variables for Printer #2
+$printerName2 = "Printer 2"
+$portName2 = "IP_#.#.#.#"
+$portAddress2 = "#.#.#.#"
+
+
+#print driver location on local network file share. 
+$printerShare = "\\\printer folder share" #print_driver.zip\universal_print_driver_folder\
+$printerFolder = "P:\print_driver.zip"  #"\\%PC-NAME%\printer folder share\print_driver.zip\" #universal_print_driver_folder\"
+$printerDriver = "*print driver name in the .INF file*"
+
+
+# Verify Sources folder exists
+if (-not (Test-Path -Path "C:\Sources"))
+{ New-Item -Path C:\ -Name "Sources" -ItemType Directory }
+
+# Verify Sources\printer exists
+if (-not (Test-Path -Path "C:\Sources\printer"))
+{ New-Item -Path C:\Sources -Name "printer" -ItemType Directory }
+
+#temporarily mount the file share, then extract the driver folder that is in a zip folder into the local sources folder. 
+net use P: $printerShare /user:%username_withpermissions%
+Expand-Archive -Path $printerFolder -DestinationPath "C:\Sources\printer" -Force
+
+
+cd C:\Sources\printer\universal_print_driver_folder\
+
+#must find the specific INF file that lists the printer driver name. Ex: "HP Universal Printing PCL 6"
+pnputil /Add-Driver "%printdriver%.inf"
+
+Add-PrinterDriver -Name $printerDriver #-InfPath "C:\Windows\System32\DriverStore\FileRepository\%filepath%\%printdriver%.inf"
+
+#add Printer 1
+Add-PrinterPort -Name $portName1 -PrinterHostAddress $portAddress1
+Add-Printer -Name $printerName1 -DriverName $printerDriver -PortName $portName1
+
+#add Printer 2
+Add-PrinterPort -Name $portName2 -PrinterHostAddress $portAddress2
+Add-Printer -Name $printerName2 -DriverName $printerDriver -PortName $portName2
+
+
+#clean up:
+cd "C:\Sources"
+Remove-Item "C:\Sources\printer" -Recurse -Include *
+net use P: /delete
