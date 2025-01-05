@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<unattend xmlns="urn:schemas-microsoft-com:unattend" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+	<settings pass="offlineServicing"/>
+	<settings pass="auditSystem"/>
+	<settings pass="auditUser"/>
+	<settings pass="oobeSystem">
+		<component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+			<InputLocale>0409:00000409</InputLocale>
+			<SystemLocale>en-US</SystemLocale>
+			<UILanguage>en-US</UILanguage>
+			<UserLocale>en-US</UserLocale>
+		</component>
+		<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+			<OOBE>
+				<ProtectYourPC>1</ProtectYourPC>
+				<HideEULAPage>true</HideEULAPage>
+				<HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+				<HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+				<SkipMachineOOBE>true</SkipMachineOOBE>
+				<SkipUserOOBE>true</SkipUserOOBE>
+				<UserAccounts>
+					<LocalAccounts>
+						<LocalAccount wcm:action="add">
+							<Name>Admin1</Name>
+							<Group>Administrators</Group>
+							<Password>
+								<Value>admin</Value>
+								<PlainText>true</PlainText>
+							</Password>
+						</LocalAccount>
+					</LocalAccounts>
+				</UserAccounts>
+				<AutoLogon>
+					<Username>Admin1</Username>
+					<Enabled>true</Enabled>
+					<LogonCount>1</LogonCount>
+					<Password>
+						<Value>admin</Value>
+						<PlainText>true</PlainText>
+					</Password>
+				</AutoLogon>
+			</OOBE>
+			<!--  <FirstLogonCommands>
+        <SynchronousCommand>
+// Enables Network Adapters After OOBE Completes
+        <Order>1</Order>
+        <CommandLine>powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Get-NetAdapter | Enable-NetAdapter -Confirm:$false"</CommandLine>
+        </SynchronousCommand>
+      </FirstLogonCommands>
+	  -->
+		</component>
+	</settings>
+</unattend>

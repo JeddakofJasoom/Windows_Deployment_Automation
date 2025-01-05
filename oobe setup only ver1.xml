@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<unattend xmlns="urn:schemas-microsoft-com:unattend">
+	<settings pass="oobeSystem">
+		<component name="Microsoft-Windows-International-Core"
+		           processorArchitecture="wow64"
+		           publicKeyToken="31bf3856ad364e35"
+		           language="neutral"
+		           versionScope="nonSxS"
+		           xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+		           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+			<InputLocale>0409:00000409</InputLocale>
+			<SystemLocale>en-US</SystemLocale>
+			<UILanguage>en-US</UILanguage>
+			<UILanguageFallback>en-US</UILanguageFallback>
+			<UserLocale>en-US</UserLocale>
+		</component>
+		<component name="Microsoft-Windows-Shell-Setup"
+		           processorArchitecture="wow64"
+		           publicKeyToken="31bf3856ad364e35"
+		           language="neutral"
+		           versionScope="nonSxS"
+		           xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+		           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+			<OOBE>
+				<HideEULAPage>true</HideEULAPage>
+				<HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
+				<HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+				<HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+				<ProtectYourPC>1</ProtectYourPC>
+				<UnattendEnableRetailDemo>false</UnattendEnableRetailDemo>
+			</OOBE>
+			<UserAccounts>
+				<LocalAccounts>
+					<LocalAccount wcm:action="add">
+						<Password>
+							<Value>bwBvAGIAZQB0AGUAcwB0AFAAYQBzAHMAdwBvAHIAZAA=</Value>
+							<PlainText>false</PlainText>
+						</Password>
+						<Description>From OOBE answer file</Description>
+						<DisplayName>oobetest</DisplayName>
+						<Group>Administrators</Group>
+						<Name>oobetest</Name>
+					</LocalAccount>
+					<LocalAccount wcm:action="add">
+						<Description>standard account auto created from oobe answer file</Description>
+						<DisplayName>OOBE Standard User</DisplayName>
+						<Group>Users</Group>
+						<Name>oobestandarduser</Name>
+					</LocalAccount>
+				</LocalAccounts>
+			</UserAccounts>
+			<TimeZone>Eastern Standard Time</TimeZone>
+		</component>
+	</settings>
+	<settings pass="specialize">
+		<component name="Microsoft-Windows-Shell-Setup"
+		           processorArchitecture="amd64"
+		           publicKeyToken="31bf3856ad364e35"
+		           language="neutral"
+		           versionScope="nonSxS"
+		           xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+		           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+			<CopyProfile>true</CopyProfile>
+			<DoNotCleanTaskBar>false</DoNotCleanTaskBar>
+			<AppIconInTouchImprovement>false</AppIconInTouchImprovement>
+			<TimeZone>Eastern Standard Time</TimeZone>
+		</component>
+	</settings>
+	<cpi:offlineImage cpi:source="wim:c:/new%20w11%20iso/sources/install.wim#Windows 11 Pro"
+	                  xmlns:cpi="urn:schemas-microsoft-com:cpi"/>
+</unattend>
