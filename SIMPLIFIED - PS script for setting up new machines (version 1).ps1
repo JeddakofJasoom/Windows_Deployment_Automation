@@ -1,0 +1,177 @@
+########################################################################################
+				############ START ITNG CUSTOM LOGIN SCRIPT ############
+########################################################################################
+ <# Trying out new method using a batch file labeled "RUNME.bat" in the flash drive's Scripts folder for easy start.
+ #>
+ 
+# STOP WINDOWS UPDATE SERVICE (temporarily)
+	Write-Host "Attempting to STOP Windows Update service..." -ForegroundColor Yellow
+Set-Service -Name wuauserv -StartupType Disabled -ErrorAction Stop
+Stop-Service -Name wuauserv -Force -ErrorAction Stop
+	# force stop all windows update processes:
+$updateProcesses = @("wuauclt", "usoclient", "waasmedic", "trustedinstaller", "TiWorker", "MoUsoCoreWorker")
+foreach ($process in $updateProcesses) { #Stop related Windows Update processes:
+    Get-Process -Name $process -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue } 
+Start-Sleep -Seconds 30
+
+if ((Get-Service -Name wuauserv).Status -eq "Running") {
+	Write-Host "WARNING: Windows updates failed to stop running after 30 seconds and is still running in background. Script will continue now... ERROR: $_" -ForegroundColor Red
+} else {
+	Write-Host "Windows update service is stopped. Beginning main script now..." -ForegroundColor Green }
+
+# CREATE LOCAL SOURCES FOLDER FOR INSTALLATION AND LOGGING:
+	# Define folders for holding the installers, scripts, and log files. 
+$sourceFolder = "D:\Scripts" 
+$destinationFolder = "C:\Sources"
+
+# CREATE "C:\SOURCES\" DIRECTORY 
+	# Note: used to store setup log files, application installers, and scripts as needed. 
+if (-not (Test-Path $destinationFolder)) {	
+New-Item -Path $destinationFolder -ItemType Directory
+	Write-Host "Created new 'Sources' folder at: $destinationFolder" -ForegroundColor Yellow }
+
+#COPY ALL CONTENTS OF D:\SCRIPTS TO C:\SOURCES :
+Copy-Item -Path "$sourceFolder\*" -Destination $destinationFolder -Recurse -Force -ErrorAction Stop
+	Write-Host "Copied all content from $sourceFolder folder to $destinationFolder" -ForegroundColor Yellow
+
+# CREATE LOG FILE AT THIS PATH:
+$logFile = "C:\Sources\initial_setup_log.txt"
+New-Item -ItemType File -Path $logFile -Force | Out-Null
+	Write-Host "New setup log file created at $logFile. Remember to check your setup log file: '$logFile' after reboot to see what has been done!" -ForegroundColor Green
+
+# CREATE CUSTOM FUNCTION TO LOG OUTPUT MESSAGES IN THIS SCRIPT.###
+function Log-Message { 
+param ( [string]$message, [string]$displayMessage )
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $logEntry = "$timestamp - $message"
+if ($displayMessage) {
+    Write-Host "$displayMessage`n$logEntry" -ForegroundColor Yellow
+} else {
+   Write-Host "$logEntry" -ForegroundColor Yellow
+}  Add-Content -Path $logFile -Value $logEntry }
+
+# START LOGGING:
+	Log-Message "Script execution started."	
+			
+# DISABLE IPV6 ON ALL ADAPTERS.
+$adapters = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
+foreach ($adapter in $adapters) {
+	Set-NetAdapterBinding -Name $adapter.Name -ComponentID ms_tcpip6 -Enabled $false -ErrorAction Stop
+Log-Message "Disabled IPv6 on network adapter: $($adapter.Name)." }
+
+# SET NETWORK TYPE TO PRIVATE FOR ALL ADAPTERS (DEFAULT IS PUBLIC).   
+$networkAdapters = Get-NetConnectionProfile
+foreach ($adapter in $networkAdapters) {# Check if the adapter is Ethernet or Wi-Fi
+if ($adapter.InterfaceAlias -like "*Ethernet*" -or $adapter.InterfaceAlias -like "*Wi-Fi*") {
+Set-NetConnectionProfile -InterfaceIndex $adapter.InterfaceIndex -NetworkCategory Private 
+	Log-Message "Set network profile for $($adapter.Name) ($($adapter.InterfaceAlias)) to Private." }}
+
+#ENABLE ALL WINDOWS FIREWALLS.
+Set-NetFirewallProfile -Profile Public, Domain, Private -Enabled True
+	Log-Message "Enabled ALL Firewalls"
+	
+# ADD WINDOWS FIREWALL RULE TO ALLOW RDP WITH FIREWALL ON.
+	# Explicitly open port 3389 for TCP, only on Private and Domain profiles:
+Get-NetFirewallRule -DisplayGroup "Remote Desktop" | Where-Object { $_.Profile -match 'Domain|Private' } | Enable-NetFirewallRule
+New-NetFirewallRule -DisplayName "Allow RDP Port 3389" `
+	-Direction Inbound `
+	-LocalPort 3389 `
+	-Protocol TCP `
+	-Action Allow `
+	-Profile Domain,Private `
+	-ErrorAction SilentlyContinue
+Log-Message "Created new firewall rule to allow Port 3389 (RDP) on Private and Domain profiles in Windows Firewall."
+
+# ENABLE RDP CONNECTIONS
+	New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" -PropertyType DWORD -Value 0 -Force
+# REQUIRE NETWORK LEVEL AUTHENTICATION
+	New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication" -PropertyType DWORD -Value 1 -Force
+Log-Message "Enabled RDP connections with network level authentication required"
+
+# SET THE POWER SCHEME TO HIGH PERFORMANCE (PREDEFINED GUID)
+powercfg.exe /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
+powercfg -x standby-timeout-ac 0   # Disables sleep when on AC power
+powercfg -x standby-timeout-dc 0   # Disables sleep when on battery power
+powercfg -x monitor-timeout-ac 20  # Turns off display after 20 minutes on AC power
+powercfg -x monitor-timeout-dc 20  # Turns off display after 20 minutes on battery power
+powercfg -x hibernate-timeout-ac 0 # Disables hibernate when on AC power
+powercfg -x hibernate-timeout-dc 0 # Disables hibernate when on battery power
+
+# SET THE BOOT MENU TIMEOUT TO 5 SECONDS (gives us time to enter bios easily)
+bcdedit.exe /timeout 5
+	Log-Message "Boot menu timeout successfully set to 5 seconds."
+	
+# INSTALL WMIC.EXE (Deprecated by Microsoft; we use this in RMM tasks): 
+Add-WindowsCapability -Online -Name WMIC~~~~ -ErrorAction Stop
+
+# ENABLE AUTOMATIC REBOOT AFTER SYSTEM FAILURE
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Name "AutoReboot" -Value 1 -ErrorAction Stop
+	Log-Message "AutoReboot after system failure has been successfully enabled."
+
+# SET DEBUGGING INFORMATION TYPE TO NONE
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Name "CrashDumpEnabled" -Value 0 -ErrorAction Stop
+	Log-Message "Debugging information type has been set to None."
+
+# UPDATE WINDOWS DEFENDER WITH POWERSHELL
+Update-MpSignature
+	Log-Message "AV signature definitions updated." 
+
+# SET TIMEZONE TO EASTERN TIME
+# **Uncomment next line for central time:
+#$TimeZone = "Central Standard Time" 
+$TimeZone = "Eastern Standard Time" 
+Set-TimeZone -Id "$TimeZone"
+	Log-Message "Time zone has been set to $TimeZone"
+
+# RESYNC TIME CLOCK (forces time update to new time zone)
+Stop-Service w32time
+	Start-Sleep -Seconds 1
+Start-Service w32time
+	Start-Sleep -Seconds 1
+w32tm /resync /Force 
+	start-Sleep -Seconds 2
+Log-Message "Synced system clock to $TimeZone" 
+
+# INSTALL 'NUGET' PACKAGE FROM MICROSOFT 
+$ConfirmPreference = 'None'	# Suppress any confirmation prompts
+	Log-Message "Installing latest version of 'NuGet' package from Microsoft"
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+
+# INSTALL *STANDARD* APPLICATIONS USING 'WinGet'
+	Log-Message "Running 'WinGet' to install standard software applications."
+winget.exe install Microsoft.Powershell --scope machine --silent --accept-source-agreements
+winget.exe install Google.Chrome --scope machine --silent --accept-source-agreements
+winget.exe install Adobe.Acrobat.Reader.64-bit --scope machine --silent --accept-source-agreements
+winget.exe install Dell.CommandUpdate --scope machine --silent --accept-source-agreements
+
+# INSTALL OFFICE 365
+	# Note: needs the additional parameters to prevent GUI popup. 
+	$sources = "C:\Sources"
+	$Office365InstallPath = "$sources\OfficeSetup.exe"
+	$configurationFilePath = "$sources\O365Configuration.xml"
+	$arguments = "/configure $configurationFilePath"
+Start-Process -FilePath $Office365InstallPath -ArgumentList $arguments -Wait 
+
+# INSTALL PS MODULE TO ALLOW POWERSHELL 7 TO RUN WINDOWS UPDATE.#
+Log-Message "Installing Powershell Module 'PSWindowsUpdate' to enable Windows Updates through Powershell"
+Install-Module PSWindowsUpdate -Force -Wait
+
+# RESTART WINDOWS UPDATE 
+Set-Service -Name wuauserv -StartupType Automatic
+Start-Service -Name wuauserv
+
+# INSTALL WINDOWS UPDATES 
+Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction SilentlyContinue
+	Log-Message "Installed Windows updates. Restarting PC in 5 seconds." 
+
+# RUN DELL COMMAND UPDATE
+cd "c:\program files (x86)\Dell\CommandUpdate\"
+& ".\dcu-cli.exe" /scan 
+$applyResult = & ".\dcu-cli.exe" /ApplyUpdates -reboot=Disable 2>&1
+	Log-Message "$Dell command updates installed: $applyResult" 
+
+# WAIT 5 SECONDS TO COMPLETE LOGGING
+Start-Sleep -Seconds 5
+	
+# REBOOT PC
+restart-computer -force
