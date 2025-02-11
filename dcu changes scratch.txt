@@ -1,0 +1,114 @@
+# Run the scan
+Write-Host "Starting Dell Command Update scan..." -ForegroundColor Yellow
+$scanResult = & $DCUexePath /scan 2>&1
+
+# Format and display the scan result
+Write-Host "Scan Results:" -ForegroundColor Green
+$scanResult | ForEach-Object { $_ | Format-List }
+
+# Log the formatted scan result
+$formattedScanResult = $scanResult -join "`n"  # Join multi-line output into a single string for logging
+Log-Message $formattedScanResult
+
+# Apply updates with reboot DISabled (PC will restart at the end of this script)
+Write-Host "Applying updates..." -ForegroundColor Yellow
+$applyResult = & $DCUexePath /applyUpdates -reboot=Disable 2>&1
+
+# Format and display the apply result
+Write-Host "Apply Updates Results:" -ForegroundColor Yellow
+$applyResult | ForEach-Object { $_ | Format-List }
+
+# Log the formatted apply result
+$formattedApplyResult = $applyResult -join "`n"  # Join multi-line output into a single string for logging
+Log-Message $formattedApplyResult
+
+# Check for errors
+Write-Host "Checking for errors..." -ForegroundColor Red
+
+
+
+
+
+#####################################
+
+# Run the scan
+Write-Host "Starting Dell Command Update scan..." -ForegroundColor Yellow
+$scanResult = & $DCUexePath /scan 2>&1
+
+# Format the scan result as a list
+Write-Host "Scan Results:" -ForegroundColor Green
+$scanResult | ForEach-Object { $_ | Format-List }  # Outputs the scan result in list format
+Log-Message "$scanResult"
+
+# Apply updates with reboot DISabled (PC will restart at the end of this script)
+Write-Host "Applying updates..." -ForegroundColor Yellow
+$applyResult = & $DCUexePath /applyUpdates -reboot=Disable 2>&1
+
+# Format the apply result as a list
+Write-Host "Apply Updates Results:" -ForegroundColor Yellow
+$applyResult | ForEach-Object { $_ | Format-List }  # Outputs the apply result in list format
+Log-Message "$applyResult"
+
+# Check for errors
+Write-Host "Checking for errors..." -ForegroundColor Red
+
+
+
+#################
+
+# Output as a formatted list
+$scanResult | Format-List
+
+# To include color, you can use Write-Host separately
+Write-Host "Scan result displayed above." -ForegroundColor Green
+
+
+
+#region
+
+			##DELL COMMAND SECTION START.
+
+# Define the directory path for Dell Command Update:
+	$DCUdirPath = "C:\Program Files\Dell\CommandUpdate\"
+	$InstallDCU = "install -e --id Dell.CommandUpdate --scope machine --accept-source-agreements"
+	$DCUexePath = Join-Path -Path $DCUdirPath -ChildPath "dcu-cli.exe"
+
+
+## FUNCTION TO RUN DELL UPDATES
+function Run-DellUpdates {
+
+try {
+	
+	# Run the scan
+	Write-Host "Starting Dell Command Update scan..." -ForegroundColor Yellow
+	#log scan results
+	$scanResult = & $DCUexePath /scan 2>&1
+	Write-Host Scan results: $scanResult -ForegroundColor Green
+
+	# Apply updates with reboot DISabled ( PC will restart at the end of this script)
+	Write-Host "Applying Dell Updates..." -ForegroundColor Yellow
+	$applyResult = & $DCUexePath /applyUpdates -reboot=Disable 2>&1
+	Write-Host "Dell Updates installed. See result: $applyResult" -ForegroundColor Yellow
+
+	# Check for errors
+	if ($scanResult -match "Error" -or $applyResult -match "Error") {
+		Write-Host "An error occurred during the update process. Error: $_" -ForegroundColor Red
+	} else {
+		Write-Host "Dell updates completed successfully." -ForegroundColor Green
+	}
+} catch {
+		Write-Host "An unexpected error occurred with Dell Command Update: $_" -ForegroundColor Red
+		}
+} # end function definition
+
+# ==========================
+# Function Execution: Run-DellUpdates
+# ==========================
+Run-DellUpdates
+
+
+#endregion
+
+
+
+# doesn't work: Start-Process -WorkingDirectory $global:DCUdirPath -FilePath $DCU_CLI -ArgumentList "/scan -reboot=Disable" -NoNewWindow -Wait *> $scanResult
