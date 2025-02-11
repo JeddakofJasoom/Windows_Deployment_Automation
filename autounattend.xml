@@ -1,0 +1,713 @@
+<?xml version="1.0" encoding="utf-8"?>
+<unattend xmlns="urn:schemas-microsoft-com:unattend" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+	<!--https://schneegans.de/windows/unattend-generator/?LanguageMode=Unattended&UILanguage=en-US&Locale=en-US&Keyboard=00000409&GeoLocation=244&ProcessorArchitecture=amd64&ComputerNameMode=Random&CompactOsMode=Default&TimeZoneMode=Explicit&TimeZone=Eastern+Standard+Time&PartitionMode=Unattended&PartitionLayout=GPT&EspSize=300&RecoveryMode=Partition&RecoverySize=1000&WindowsEditionMode=Unattended&WindowsEdition=pro&UserAccountMode=Unattended&AccountName0=ITNGAdmin&AccountPassword0=password&AccountGroup0=Administrators&AccountName1=&AccountName2=&AccountName3=&AccountName4=&AutoLogonMode=Own&PasswordExpirationMode=Unlimited&LockoutMode=Default&HideFiles=Hidden&TaskbarSearch=Icon&DisableWidgets=true&LeftTaskbar=true&DeleteTaskbarIcons=true&HideTaskViewButton=true&AllowPowerShellScripts=true&PreventDeviceEncryption=true&HideEdgeFre=true&WifiMode=Skip&ExpressSettings=DisableAll&KeysMode=Configure&CapsLockInitial=Off&CapsLockBehavior=Toggle&NumLockInitial=On&NumLockBehavior=Toggle&ScrollLockInitial=Off&ScrollLockBehavior=Toggle&ColorMode=Default&WallpaperMode=Default&Remove3DViewer=true&RemoveBingSearch=true&RemoveCamera=true&RemoveClipchamp=true&RemoveCopilot=true&RemoveCortana=true&RemoveDevHome=true&RemoveFamily=true&RemoveFeedbackHub=true&RemoveGetHelp=true&RemoveHandwriting=true&RemoveMailCalendar=true&RemoveMaps=true&RemoveMathInputPanel=true&RemoveMediaFeatures=true&RemoveMixedReality=true&RemoveZuneVideo=true&RemoveNews=true&RemoveOffice365=true&RemoveOneNote=true&RemoveOneSync=true&RemoveOpenSSHClient=true&RemoveOutlook=true&RemovePaint3D=true&RemovePeople=true&RemovePowerAutomate=true&RemoveRecall=true&RemoveSkype=true&RemoveSolitaire=true&RemoveStepsRecorder=true&RemoveTeams=true&RemoveGetStarted=true&RemoveToDo=true&RemoveWallet=true&RemoveWeather=true&RemoveWindowsHello=true&RemoveWindowsMediaPlayer=true&RemoveWordPad=true&RemoveXboxApps=true&RemoveYourPhone=true&StartTilesMode=Empty&StartPinsMode=Custom&StartPinsJson=%7B%0D%0A++%22pinnedList%22%3A+%5B%0D%0A++++%7B%0D%0A++++++%22desktopAppLink%22%3A+%22%25ALLUSERSPROFILE%25%5C%5CMicrosoft%5C%5CWindows%5C%5CStart+Menu%5C%5CPrograms%5C%5CMicrosoft+Edge.lnk%22%0D%0A++++%7D%2C%0D%0A++++%7B%0D%0A++++++%22desktopAppLink%22%3A+%22%25APPDATA%25%5C%5CMicrosoft%5C%5CWindows%5C%5CStart+Menu%5C%5CPrograms%5C%5CFile+Explorer.lnk%22%0D%0A++++%7D%2C%0D%0A++++%7B%0D%0A++++++%22packagedAppId%22%3A+%22windows.immersivecontrolpanel_cw5n1h2txyewy%21microsoft.windows.immersivecontrolpanel%22%0D%0A++++%7D%0D%0A++%5D%0D%0A%7D&FirstLogonScript1=%23%23%23%23%23%23%23%23%23%23%23%23+START+ITNG+CUSTOM+LOGIN+SCRIPT+%23%23%23%23%23%23%23%23%23%23%23%23%0D%0A%0D%0A%09%0D%0A%23+%3E%3E%3EFIRST%3C%3C%3C+RUN+THIS+SEPARATELY+%3A%0D%0A%23Set-ExecutionPolicy+unrestricted+-Force%0D%0A%09%3C%23Note%3A+This+MUST+be+entered+manually+first%2C+or+it+will+not+allow+this+script+to+be+run.+You+can+run+this+in+Powershell+ISE+as+an+administrator+and+run+it+all+at+once.+%23%3E+%0D%0A%0D%0A%23+%3E%3E%3E+Make+sure+you+have+the+scripts+folder+with+all+packages+and+installers+listed+below+in+this+script+for+it+to+run+properly.+%3C%3C%3C+%0D%0A%0D%0A%24scripts+%3D+%22D%3A%5CScripts%22%0D%0Acd+%24scripts%0D%0A%09%23+Define+the+log+file+path%0D%0A%24logFile+%3D+%22D%3A%5CScripts%5Csetup_log.txt%22%0D%0A%09%23+Function+to+log+messages%0D%0Afunction+Log-Message+%7B%0D%0A++++param+%28%0D%0A++++++++%5Bstring%5D%24message%0D%0A++++%29%0D%0A++++%24timestamp+%3D+Get-Date+-Format+%22yyyy-MM-dd+HH%3Amm%3Ass%22%0D%0A++++%24logEntry+%3D+%22%24timestamp+-+%24message%22%0D%0A++++Add-Content+-Path+%24logFile+-Value+%24logEntry%0D%0A%7D%0D%0A%09%23+Start+logging%0D%0ALog-Message+%22Script+execution+started.%22%0D%0A%0D%0A%0D%0A%09%23+Begin+main+script+function+%0D%0Atry+%7B%0D%0A%09%09%23%23%23+Setup+Powershell+7+to+run+winget+app-installer+and+windows+update+%23%23%23%0D%0A%09%0D%0A%09%23+Setup+PSWindowsUpdate+-+HAS+to+be+on+*new*+w11+23H2+machine+to+work+%0D%0AInstall-PackageProvider+-name+NuGet+-Minimumversion+2.8.5.201+-Force%0D%0AInstall-Module+PSWindowsUpdate+-Force%0D%0ALog-Message+%22PSwindows+update+complete%22%0D%0A%0D%0A%09%23+Fix+WinGet+-+make+sure+both+of+these+packages+are+in+the+.%5Cscripts+folder.+You+can+get+most+current+versions+from+GitHub.+%0D%0AAdd-AppPackage+-path+%22D%3A%5CScripts%5CMicrosoft.UI.Xaml.2.8.appx%22%0D%0AAdd-AppPackage+-ForceApplicationShutdown+%22D%3A%5CScripts%5Cwinget.msixbundle%22%0D%0ALog-Message+%22Winget+is+fixed%22%0D%0A%09%0D%0A%09%0D%0A%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%0D%0A%0D%0A%0D%0A%23%23%23+Networking+Settings+Section+START+%23%23%23%0D%0A%0D%0A%09%23+Disable+Windows+Firewalls%0D%0ASet-NetFirewallProfile+-Profile+Public+-Enabled+True%0D%0A%09%09%23comment+out+the+next+line+if+you+are+working+on+a+LAPTOP%2C+or+a+machine+that+will+not+have+a+physical+firewall.+%0D%0ASet-NetFirewallProfile+-Profile+Domain%2C+Private+-Enabled+False%0D%0ALog-Message+%22Disabled+Firewalls%22%0D%0A%0D%0A%09%23Disable+IPv6+on+all+adapters%0D%0A%09%09%23+Get+all+network+adapters+that+are+up%0D%0A%24adapters+%3D+Get-NetAdapter+%7C+Where-Object+%7B+%24_.Status+-eq+%27Up%27+%7D%0D%0A%09%09%23+Disable+IPv6+on+each+network+adapter%0D%0Aforeach+%28%24adapter+in+%24adapters%29+%7B%0D%0A++++Set-NetAdapterBinding+-Name+%24adapter.Name+-ComponentID+ms_tcpip6+-Enabled+%24false%0D%0A++++Log-Message+%22IPv6+has+been+disabled+on+the+adapter%3A+%24%28%24adapter.Name%29.%22%0D%0A%7D%0D%0ALog-Message+%22IPv6+has+been+disabled+on+all+network+adapters.%22%0D%0A%0D%0A%09%23+Set+Network+type+to+PRIVATE+%28default+is+public%29.+%0D%0A%09%09%23+Get+all+network+adapters+with+a+network+connection%0D%0A%24networkAdapters+%3D+Get-NetConnectionProfile%0D%0Aforeach+%28%24adapter+in+%24networkAdapters%29+%7B%0D%0A++++%23+Check+if+the+adapter+is+Ethernet+or+Wi-Fi%0D%0A++++if+%28%24adapter.InterfaceAlias+-like+%22*Ethernet*%22+-or+%24adapter.InterfaceAlias+-like+%22*Wi-Fi*%22%29+%7B%0D%0A++++++++Write-Output+%22Setting+network+profile+for+%24%28%24adapter.Name%29+%28%24%28%24adapter.InterfaceAlias%29%29+to+Private.%22%0D%0A++++++++Set-NetConnectionProfile+-InterfaceIndex+%24adapter.InterfaceIndex+-NetworkCategory+Private%0D%0A++++%7D%0D%0A%7D%0D%0AWrite-Output+%22All+Ethernet+and+Wi-Fi+network+profiles+set+to+Private.%22%0D%0A%0D%0A%09%23Enable+RDP+connections+without+network+level+authentication%0D%0ASet-ItemProperty+-Path+%22HKLM%3A%5CSYSTEM%5CCurrentControlSet%5CControl%5CTerminal+Server%5CWinStations%5CRDP-Tcp%22+%60%0D%0A-Name+%22UserAuthentication%22+-Value+0+%0D%0A%09%09%3C%23+notes%3A+%0D%0A%09%09%3A+do+not+use+a+property+type+switch+here+-+it+will+break+the+command.+%0D%0A%09%09%3A+0+turns+ON+allowed+RDP+connections+AND+turns+off+NLA+requirement.+%0D%0A%09%09%3A+In+general%2C+this+is+the+value+we+want+on+managed+client+machines.+%0D%0A%09%09%3A+2+turns+off+RDP+connections+entirely.+We+only+want+this+on+non-managed+client+machines.+%0D%0A%09%09%23%3E+%0D%0ALog-Message+%22Enabled+RDP+connections+without+network+level+authentication%22%0D%0A%0D%0A%23%23%23+Networking+Settings+Section+END+%23%23%23%0D%0A%0D%0A%0D%0A%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%0D%0A%0D%0A%0D%0A%23%23%23+Power+Settings+Section+START+%23%23%23%0D%0A%0D%0A%09%23+Set+active+power+plan%3A%0D%0A%0D%0A%09%09%23+Set+the+power+scheme+to+High+Performance+%28predefined+GUID%29%0D%0Apowercfg.exe+%2Fsetactive+8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c%0D%0A%0D%0A%09%09%23+Disable+sleep+on+AC+and+DC+%28battery%29+power%0D%0Apowercfg+-x+standby-timeout-ac+0+++++++%23+Disables+sleep+when+on+AC+power%0D%0Apowercfg+-x+standby-timeout-dc+0+++++++%23+Disables+sleep+when+on+battery+power%0D%0A%0D%0A%09%09%23+Set+the+display+to+turn+off+after+20+minutes+on+both+AC+and+DC+power%0D%0Apowercfg+-x+monitor-timeout-ac+20++++++%23+Turns+off+display+after+20+minutes+on+AC+power%0D%0Apowercfg+-x+monitor-timeout-dc+20++++++%23+Turns+off+display+after+20+minutes+on+battery+power%0D%0A%0D%0A%23+Disable+hibernate+on+both+AC+and+DC+power%0D%0Apowercfg+-x+hibernate-timeout-ac+0+++++%23+Disables+hibernate+when+on+AC+power%0D%0Apowercfg+-x+hibernate-timeout-dc+0+++++%23+Disables+hibernate+when+on+battery+power%0D%0A%0D%0A%0D%0A%23%23%23+Power+Settings+Section+END+%23%23%23%0D%0A%0D%0A%0D%0A%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%23%0D%0A%0D%0A%0D%0A%23%23%23+Misc+section+%23%23%23%0D%0A%0D%0A%0D%0A%09%23+Set+system+startup+entries+-+the+boot+menu+will+not+be+displayed%2C+and+the+default+operating+system+will+boot+immediately+without+delay.%0D%0Abcdedit.exe+%2FTimeout+0%0D%0ALog-Message+%22system+startup+set+to+boot+immediately+into+Windows%22%0D%0A%0D%0A%09%23+Install+wmic.exe+commands%0D%0Adism+%2Fonline+%2Fenable-feature+%2Ffeaturename%3ALegacyComponents+%2Fall%0D%0A%09%3C%23+notes%3A%0D%0A%09%3A+24H2+deprecates+this+and+is+no+longer+installed+by+default.%0D%0A%09%3A+We+have+RMM+components+and+scripts+that+still+use+wmic.exe+instead+of+the+newer+powershell.%0D%0A%09%3A+This+requires+a+system+restart+to+fully+install.%0D%0A%09%3A+All+wmic.exe+commands+are+replaced+with+powershell+commands+in+this+script.+%0D%0A%09%23%3E+%0D%0A%09%0D%0A%09%23+System+failure+options%0D%0A%09%0D%0A%09%09%23+Enable+automatic+reboot+after+system+failure%0D%0ASet-ItemProperty+-Path+%22HKLM%3A%5CSYSTEM%5CCurrentControlSet%5CControl%5CCrashControl%22+-Name+%22AutoReboot%22+-Value+1%0D%0A%09%09%23+Set+debugging+information+type+to+None%0D%0ASet-ItemProperty+-Path+%22HKLM%3A%5CSYSTEM%5CCurrentControlSet%5CControl%5CCrashControl%22+-Name+%22CrashDumpEnabled%22+-Value+0%0D%0A%0D%0ALog-Message+%22System+settings+updated%3A+AutoReboot+enabled+and+DebugInfoType+set+to+None.%22%0D%0A%0D%0A%0D%0A%09%23+Update+AV+Definitions%0D%0AUpdate-MpSignature%0D%0ALog-Message+%22AV+signature+definitions+update+completed+successfully%22%0D%0A%0D%0A%0D%0A%09%23Set+TimeZone+to+Eastern+Time%0D%0ASet-TimeZone+-Name+%22Eastern+Standard+Time%22%0D%0ALog-Message+%22EST+time+zone+set%22%0D%0A%0D%0A%0D%0A%09%3C%23+Set+TimeZone+to+Central+Time+%28only+used+for+select+clients%29+-+uncomment+and+comment+out+EST+when+needed.+%0D%0ASet-TimeZone+-Name+%22Central+Standard+Time%22%0D%0ALog-Message+%22Central+time+zone+set%22%0D%0A%09%23%3E%0D%0A%0D%0A%0D%0A%09%23+Run+WinGet+to+install+standard+applications+%0D%0A%09%09+%0D%0Awinget.exe+install+microsoft.powershell+%2D%2Dscope+machine+%2D%2Daccept-source-agreements%0D%0ALog-Message+%22Powershell+7+installed+successfully.%22%0D%0Awinget.exe+install+Google.Chrome+%2D%2Dscope+machine+%2D%2Daccept-source-agreements%0D%0ALog-Message+%22Google+Chrome+installed+successfully.%22%0D%0A%23winget.exe+install+Mozilla.Firefox+%2D%2Dscope+machine+%2D%2Daccept-source-agreements%0D%0A%23Log-Message+%22Firefox+installed+successfully.%22%0D%0Awinget.exe+install+adobe.acrobat.reader.64-bit+%2D%2Dscope+machine+%2D%2Daccept-source-agreements%0D%0ALog-Message+%22Adobe+Reader+installed+successfully.%22%0D%0Awinget+install+-e+%2D%2Did+Dell.CommandUpdate+%2D%2Dscope+machine+%2D%2Daccept-source-agreements%0D%0ALog-Message+%22Dell+Command+installed+successfully.%22%0D%0Awinget.exe+upgrade+%2D%2Dall%0D%0ALog-Message+%22All+software+upgrades+installed+successfully.%22%0D%0A%09%3C%23+note%3A+The+%2D%2Daccept-source-agreements+is+used+to+auto+select+%22yes%22+to+use+the+ms+store+and+allow+the+command+to+run+automatically.%0D%0A%09%23%3E+%0D%0A%0D%0A%3C%23+install+Sonicwall+NetExtender%3A%0D%0A%0D%0Amsiexec.exe+%2Fi+%22D%3A%5CScripts%5CNetExtender-x64-10.2.341.msi%22+%2Fqn+%2Fnorestart+server%3D%23.%23.%23.%23+domain%3DLocalDomain+EDITABLE%3DTRUE+netlogon%3Dtrue+ALLUSERS%3D2%0D%0A%09%3C%23+notes%3A%0D%0A%09%3A+%2Fqn+%3D+silent+install+%0D%0A%09%3A+%2Fnorestart+%3D+does+not+restart+PC+after+install%0D%0A%09%3A+server+%3D+public+IP+address%0D%0A%09%3A+domain+%3D+LocalDomain+always%0D%0A%09%3A+ALLUSERS%3D2+installs+this+for+all+users+on+the+PC%3B+case+sensitive+command.%0D%0A%09%23%3E+%0D%0A%23%3E+%0D%0A%0D%0A%0D%0A%09%23+Run+Dell+command+updates+and+push+installation.+%0D%0Acd+%22C%3A%5CProgram+Files+%28x86%29%5CDell%5CCommandUpdate%5C%22%0D%0A.%5Cdcu-cli.exe+%2Fscan%0D%0A.%5Cdcu-cli.exe+%2FapplyUpdates+-reboot%3DDisable%0D%0A%0D%0A%0D%0A%09%23+Run+Windows+Update%0D%0AWrite-Host+%22Starting+Windows+Updates+and+will+automatically+reboot+the+machine+when+complete.%22%0D%0AGet-WindowsUpdate+-AcceptAll+-Install+-AutoReboot%0D%0A%0D%0A%0D%0A%09%23+Final+message%0D%0ALog-Message+%22All+tasks+completed+successfully.%22%0D%0A%7D%0D%0Acatch+%7B%0D%0A++++Log-Message+%22An+error+occurred%3A+%24_%22%0D%0A%7D%0D%0A%0D%0A%23+End+logging%0D%0ALog-Message+%22Script+execution+ended.%22%0D%0APause&FirstLogonScriptType1=Ps1&RestartExplorer=true&WdacMode=Skip-->
+	<settings pass="offlineServicing"></settings>
+	<settings pass="windowsPE">
+		<component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+			<SetupUILanguage>
+				<UILanguage>en-US</UILanguage>
+			</SetupUILanguage>
+			<InputLocale>0409:00000409</InputLocale>
+			<SystemLocale>en-US</SystemLocale>
+			<UILanguage>en-US</UILanguage>
+			<UserLocale>en-US</UserLocale>
+		</component>
+		<component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+			<ImageInstall>
+				<OSImage>
+					<InstallTo>
+						<DiskID>0</DiskID>
+						<PartitionID>3</PartitionID>
+					</InstallTo>
+				</OSImage>
+			</ImageInstall>
+			<UserData>
+				<ProductKey>
+					<Key>VK7JG-NPHTM-C97JM-9MPGT-3V66T</Key>
+				</ProductKey>
+				<AcceptEula>true</AcceptEula>
+			</UserData>
+			<UseConfigurationSet>false</UseConfigurationSet>
+			<RunSynchronous>
+				<RunSynchronousCommand wcm:action="add">
+					<Order>1</Order>
+					<Path>cmd.exe /c ">>"X:\diskpart.txt" (echo SELECT DISK=0&echo CLEAN&echo CONVERT GPT&echo CREATE PARTITION EFI SIZE=300&echo FORMAT QUICK FS=FAT32 LABEL="System"&echo CREATE PARTITION MSR SIZE=16)"</Path>
+				</RunSynchronousCommand>
+				<RunSynchronousCommand wcm:action="add">
+					<Order>2</Order>
+					<Path>cmd.exe /c ">>"X:\diskpart.txt" (echo CREATE PARTITION PRIMARY&echo SHRINK MINIMUM=1000&echo FORMAT QUICK FS=NTFS LABEL="Windows"&echo CREATE PARTITION PRIMARY&echo FORMAT QUICK FS=NTFS LABEL="Recovery")"</Path>
+				</RunSynchronousCommand>
+				<RunSynchronousCommand wcm:action="add">
+					<Order>3</Order>
+					<Path>cmd.exe /c ">>"X:\diskpart.txt" (echo SET ID="de94bba4-06d1-4d40-a16a-bfd50179d6ac"&echo GPT ATTRIBUTES=0x8000000000000001)"</Path>
+				</RunSynchronousCommand>
+				<RunSynchronousCommand wcm:action="add">
+					<Order>4</Order>
+					<Path>cmd.exe /c "diskpart.exe /s "X:\diskpart.txt" >>"X:\diskpart.log" || ( type "X:\diskpart.log" & echo diskpart encountered an error. & pause & exit /b 1 )"</Path>
+				</RunSynchronousCommand>
+			</RunSynchronous>
+		</component>
+	</settings>
+	<settings pass="generalize"></settings>
+	<settings pass="specialize">
+		<component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+			<RunSynchronous>
+				<RunSynchronousCommand wcm:action="add">
+					<Order>1</Order>
+					<Path>powershell.exe -NoProfile -Command "$xml = [xml]::new(); $xml.Load('C:\Windows\Panther\unattend.xml'); $sb = [scriptblock]::Create( $xml.unattend.Extensions.ExtractScript ); Invoke-Command -ScriptBlock $sb -ArgumentList $xml;"</Path>
+				</RunSynchronousCommand>
+				<RunSynchronousCommand wcm:action="add">
+					<Order>2</Order>
+					<Path>powershell.exe -NoProfile -Command "Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\Specialize.ps1' -Raw | Invoke-Expression;"</Path>
+				</RunSynchronousCommand>
+				<RunSynchronousCommand wcm:action="add">
+					<Order>3</Order>
+					<Path>reg.exe load "HKU\DefaultUser" "C:\Users\Default\NTUSER.DAT"</Path>
+				</RunSynchronousCommand>
+				<RunSynchronousCommand wcm:action="add">
+					<Order>4</Order>
+					<Path>powershell.exe -NoProfile -Command "Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\DefaultUser.ps1' -Raw | Invoke-Expression;"</Path>
+				</RunSynchronousCommand>
+				<RunSynchronousCommand wcm:action="add">
+					<Order>5</Order>
+					<Path>reg.exe unload "HKU\DefaultUser"</Path>
+				</RunSynchronousCommand>
+			</RunSynchronous>
+		</component>
+		<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+			<TimeZone>Eastern Standard Time</TimeZone>
+		</component>
+	</settings>
+	<settings pass="auditSystem"></settings>
+	<settings pass="auditUser"></settings>
+	<settings pass="oobeSystem">
+		<component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+			<InputLocale>0409:00000409</InputLocale>
+			<SystemLocale>en-US</SystemLocale>
+			<UILanguage>en-US</UILanguage>
+			<UserLocale>en-US</UserLocale>
+		</component>
+		<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+			<UserAccounts>
+				<LocalAccounts>
+					<LocalAccount wcm:action="add">
+						<Name>ITNGAdmin</Name>
+						<Group>Administrators</Group>
+						<Password>
+							<Value>password</Value>
+							<PlainText>true</PlainText>
+						</Password>
+					</LocalAccount>
+				</LocalAccounts>
+			</UserAccounts>
+			<AutoLogon>
+				<Username>ITNGAdmin</Username>
+				<Enabled>true</Enabled>
+				<LogonCount>1</LogonCount>
+				<Password>
+					<Value>password</Value>
+					<PlainText>true</PlainText>
+				</Password>
+			</AutoLogon>
+			<OOBE>
+				<ProtectYourPC>3</ProtectYourPC>
+				<HideEULAPage>true</HideEULAPage>
+				<HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+				<HideOnlineAccountScreens>false</HideOnlineAccountScreens>
+			</OOBE>
+			<FirstLogonCommands>
+				<SynchronousCommand wcm:action="add">
+					<Order>1</Order>
+					<CommandLine>powershell.exe -NoProfile -Command "Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\FirstLogon.ps1' -Raw | Invoke-Expression;"</CommandLine>
+				</SynchronousCommand>
+			</FirstLogonCommands>
+		</component>
+	</settings>
+	<Extensions xmlns="https://schneegans.de/windows/unattend-generator/">
+		<ExtractScript>
+param(
+    [xml] $Document
+);
+
+foreach( $file in $Document.unattend.Extensions.File ) {
+    $path = [System.Environment]::ExpandEnvironmentVariables(
+        $file.GetAttribute( 'path' )
+    );
+    mkdir -Path( $path | Split-Path -Parent ) -ErrorAction 'SilentlyContinue';
+    $content = $file.InnerText.Trim();
+    if( $file.GetAttribute( 'transformation' ) -ieq 'Base64' ) {
+        [System.IO.File]::WriteAllBytes( $path, [System.Convert]::FromBase64String( $content ) );
+    } else {
+        $encoding = switch( [System.IO.Path]::GetExtension( $path ) ) {
+            { $_ -in '.ps1', '.xml' } { [System.Text.Encoding]::UTF8; }
+            { $_ -in '.reg', '.vbs', '.js' } { [System.Text.UnicodeEncoding]::new( $false, $true ); }
+            default { [System.Text.Encoding]::Default; }
+        };
+        [System.IO.File]::WriteAllBytes( $path, ( $encoding.GetPreamble() + $encoding.GetBytes( $content ) ) );
+    }
+}
+		</ExtractScript>
+		<File path="C:\Windows\Setup\Scripts\RemovePackages.ps1" transformation="Text">
+$selectors = @(
+	'Microsoft.Microsoft3DViewer';
+	'Microsoft.BingSearch';
+	'Microsoft.WindowsCamera';
+	'Clipchamp.Clipchamp';
+	'Microsoft.549981C3F5F10';
+	'Microsoft.Windows.DevHome';
+	'MicrosoftCorporationII.MicrosoftFamily';
+	'Microsoft.WindowsFeedbackHub';
+	'Microsoft.GetHelp';
+	'Microsoft.Getstarted';
+	'microsoft.windowscommunicationsapps';
+	'Microsoft.WindowsMaps';
+	'Microsoft.MixedReality.Portal';
+	'Microsoft.BingNews';
+	'Microsoft.MicrosoftOfficeHub';
+	'Microsoft.Office.OneNote';
+	'Microsoft.OutlookForWindows';
+	'Microsoft.MSPaint';
+	'Microsoft.People';
+	'Microsoft.PowerAutomateDesktop';
+	'Microsoft.SkypeApp';
+	'Microsoft.MicrosoftSolitaireCollection';
+	'MicrosoftTeams';
+	'MSTeams';
+	'Microsoft.Todos';
+	'Microsoft.Wallet';
+	'Microsoft.BingWeather';
+	'Microsoft.Xbox.TCUI';
+	'Microsoft.XboxApp';
+	'Microsoft.XboxGameOverlay';
+	'Microsoft.XboxGamingOverlay';
+	'Microsoft.XboxIdentityProvider';
+	'Microsoft.XboxSpeechToTextOverlay';
+	'Microsoft.GamingApp';
+	'Microsoft.YourPhone';
+	'Microsoft.ZuneVideo';
+);
+$getCommand = {
+  Get-AppxProvisionedPackage -Online;
+};
+$filterCommand = {
+  $_.DisplayName -eq $selector;
+};
+$removeCommand = {
+  [CmdletBinding()]
+  param(
+    [Parameter( Mandatory, ValueFromPipeline )]
+    $InputObject
+  );
+  process {
+    $InputObject | Remove-AppxProvisionedPackage -AllUsers -Online -ErrorAction 'Continue';
+  }
+};
+$type = 'Package';
+$logfile = 'C:\Windows\Setup\Scripts\RemovePackages.log';
+& {
+	$installed = & $getCommand;
+	foreach( $selector in $selectors ) {
+		$result = [ordered] @{
+			Selector = $selector;
+		};
+		$found = $installed | Where-Object -FilterScript $filterCommand;
+		if( $found ) {
+			$result.Output = $found | & $removeCommand;
+			if( $? ) {
+				$result.Message = "$type removed.";
+			} else {
+				$result.Message = "$type not removed.";
+				$result.Error = $Error[0];
+			}
+		} else {
+			$result.Message = "$type not installed.";
+		}
+		$result | ConvertTo-Json -Depth 3 -Compress;
+	}
+} *>&1 >> $logfile;
+		</File>
+		<File path="C:\Windows\Setup\Scripts\RemoveCapabilities.ps1" transformation="Text">
+$selectors = @(
+	'Language.Handwriting';
+	'MathRecognizer';
+	'OneCoreUAP.OneSync';
+	'OpenSSH.Client';
+	'App.StepsRecorder';
+	'Hello.Face.18967';
+	'Hello.Face.Migration.18967';
+	'Hello.Face.20134';
+	'Media.WindowsMediaPlayer';
+	'Microsoft.Windows.WordPad';
+);
+$getCommand = {
+  Get-WindowsCapability -Online | Where-Object -Property 'State' -NotIn -Value @(
+    'NotPresent';
+    'Removed';
+  );
+};
+$filterCommand = {
+  ($_.Name -split '~')[0] -eq $selector;
+};
+$removeCommand = {
+  [CmdletBinding()]
+  param(
+    [Parameter( Mandatory, ValueFromPipeline )]
+    $InputObject
+  );
+  process {
+    $InputObject | Remove-WindowsCapability -Online -ErrorAction 'Continue';
+  }
+};
+$type = 'Capability';
+$logfile = 'C:\Windows\Setup\Scripts\RemoveCapabilities.log';
+& {
+	$installed = & $getCommand;
+	foreach( $selector in $selectors ) {
+		$result = [ordered] @{
+			Selector = $selector;
+		};
+		$found = $installed | Where-Object -FilterScript $filterCommand;
+		if( $found ) {
+			$result.Output = $found | & $removeCommand;
+			if( $? ) {
+				$result.Message = "$type removed.";
+			} else {
+				$result.Message = "$type not removed.";
+				$result.Error = $Error[0];
+			}
+		} else {
+			$result.Message = "$type not installed.";
+		}
+		$result | ConvertTo-Json -Depth 3 -Compress;
+	}
+} *>&1 >> $logfile;
+		</File>
+		<File path="C:\Windows\Setup\Scripts\RemoveFeatures.ps1" transformation="Text">
+$selectors = @(
+	'MediaPlayback';
+	'Recall';
+);
+$getCommand = {
+  Get-WindowsOptionalFeature -Online | Where-Object -Property 'State' -NotIn -Value @(
+    'Disabled';
+    'DisabledWithPayloadRemoved';
+  );
+};
+$filterCommand = {
+  $_.FeatureName -eq $selector;
+};
+$removeCommand = {
+  [CmdletBinding()]
+  param(
+    [Parameter( Mandatory, ValueFromPipeline )]
+    $InputObject
+  );
+  process {
+    $InputObject | Disable-WindowsOptionalFeature -Online -Remove -NoRestart -ErrorAction 'Continue';
+  }
+};
+$type = 'Feature';
+$logfile = 'C:\Windows\Setup\Scripts\RemoveFeatures.log';
+& {
+	$installed = & $getCommand;
+	foreach( $selector in $selectors ) {
+		$result = [ordered] @{
+			Selector = $selector;
+		};
+		$found = $installed | Where-Object -FilterScript $filterCommand;
+		if( $found ) {
+			$result.Output = $found | & $removeCommand;
+			if( $? ) {
+				$result.Message = "$type removed.";
+			} else {
+				$result.Message = "$type not removed.";
+				$result.Error = $Error[0];
+			}
+		} else {
+			$result.Message = "$type not installed.";
+		}
+		$result | ConvertTo-Json -Depth 3 -Compress;
+	}
+} *>&1 >> $logfile;
+		</File>
+		<File path="C:\Windows\Setup\Scripts\TaskbarIcons.ps1" transformation="Text">
+Remove-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband' -Name '*';
+		</File>
+		<File path="C:\Windows\Setup\Scripts\SetStartPins.ps1" transformation="Text">
+$json = '{
+  "pinnedList": [
+    {
+      "desktopAppLink": "%ALLUSERSPROFILE%\\Microsoft\\Windows\\Start Menu\\Programs\\Microsoft Edge.lnk"
+    },
+    {
+      "desktopAppLink": "%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\File Explorer.lnk"
+    },
+    {
+      "packagedAppId": "windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel"
+    }
+  ]
+}';
+if( [System.Environment]::OSVersion.Version.Build -lt 20000 ) {
+	return;
+}
+$key = 'Registry::HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Start';
+New-Item -Path $key -ItemType 'Directory' -ErrorAction 'SilentlyContinue';
+Set-ItemProperty -LiteralPath $key -Name 'ConfigureStartPins' -Value $json -Type 'String';
+		</File>
+		<File path="C:\Users\Default\AppData\Local\Microsoft\Windows\Shell\LayoutModification.xml" transformation="Text">
+<LayoutModificationTemplate Version="1" xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
+	<LayoutOptions StartTileGroupCellWidth="6" />
+	<DefaultLayoutOverride>
+		<StartLayoutCollection>
+			<StartLayout GroupCellWidth="6" xmlns="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" />
+		</StartLayoutCollection>
+	</DefaultLayoutOverride>
+</LayoutModificationTemplate>
+		</File>
+		
+		<File path="C:\Windows\Setup\Scripts\Specialize.ps1" transformation="Text">
+$scripts = @(
+	{
+		Remove-Item -LiteralPath 'Registry::HKLM\Software\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\DevHomeUpdate' -Force -ErrorAction 'SilentlyContinue';
+	};
+	{
+		Remove-Item -LiteralPath 'Registry::HKLM\Software\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\OutlookUpdate' -Force -ErrorAction 'SilentlyContinue';
+	};
+	{
+		reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v ConfigureChatAutoInstall /t REG_DWORD /d 0 /f;
+	};
+	{
+		Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\RemovePackages.ps1' -Raw | Invoke-Expression;
+	};
+	{
+		Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\RemoveCapabilities.ps1' -Raw | Invoke-Expression;
+	};
+	{
+		Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\RemoveFeatures.ps1' -Raw | Invoke-Expression;
+	};
+	{
+		net.exe accounts /maxpwage:UNLIMITED;
+	};
+	{
+		Set-ExecutionPolicy -Scope 'LocalMachine' -ExecutionPolicy 'RemoteSigned' -Force;
+	};
+	{
+		reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /v AllowNewsAndInterests /t REG_DWORD /d 0 /f;
+	};
+	{
+		reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\BitLocker" /v "PreventDeviceEncryption" /t REG_DWORD /d 1 /f;
+	};
+	{
+		reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v HideFirstRunExperience /t REG_DWORD /d 1 /f;
+	};
+	{
+		Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\SetStartPins.ps1' -Raw | Invoke-Expression;
+	};
+);
+
+& {
+	[float] $complete = 0;
+	[float] $increment = 100 / $scripts.Count;
+	foreach( $script in $scripts ) {
+		Write-Progress -Activity 'Running scripts to customize your Windows installation. Do not close this window.' -PercentComplete $complete;
+		& $script;
+		$complete += $increment;
+	}
+} *>&1 >> "C:\Windows\Setup\Scripts\Specialize.log";
+		</File>
+		<File path="C:\Windows\Setup\Scripts\UserOnce.ps1" transformation="Text">
+$scripts = @(
+	{
+		Get-AppxPackage -Name 'Microsoft.Windows.Ai.Copilot.Provider' | Remove-AppxPackage;
+	};
+	{
+		Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\TaskbarIcons.ps1' -Raw | Invoke-Expression;
+	};
+	{
+		Set-ItemProperty -LiteralPath 'Registry::HKCU\Software\Microsoft\Windows\CurrentVersion\Search' -Name 'SearchboxTaskbarMode' -Type 'DWord' -Value 1;
+	};
+	{
+		Get-Process -Name 'explorer' -ErrorAction 'SilentlyContinue' | Where-Object -FilterScript {
+			$_.SessionId -eq ( Get-Process -Id $PID ).SessionId;
+		} | Stop-Process -Force;
+	};
+);
+
+& {
+	[float] $complete = 0;
+	[float] $increment = 100 / $scripts.Count;
+	foreach( $script in $scripts ) {
+		Write-Progress -Activity 'Running scripts to configure this user account. Do not close this window.' -PercentComplete $complete;
+		& $script;
+		$complete += $increment;
+	}
+} *>&1 >> "$env:TEMP\UserOnce.log";
+		</File>
+		<File path="C:\Windows\Setup\Scripts\DefaultUser.ps1" transformation="Text">
+$scripts = @(
+	{
+		reg.exe add "HKU\DefaultUser\Software\Policies\Microsoft\Windows\WindowsCopilot" /v TurnOffWindowsCopilot /t REG_DWORD /d 1 /f;
+	};
+	{
+		reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v ShowTaskViewButton /t REG_DWORD /d 0 /f;
+	};
+	{
+		reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v TaskbarAl /t REG_DWORD /d 0 /f;
+	};
+	{
+		foreach( $root in 'Registry::HKU\.DEFAULT', 'Registry::HKU\DefaultUser' ) {
+		  Set-ItemProperty -LiteralPath "$root\Control Panel\Keyboard" -Name 'InitialKeyboardIndicators' -Type 'String' -Value 2 -Force;
+		}
+	};
+	{
+		reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\RunOnce" /v "UnattendedSetup" /t REG_SZ /d "powershell.exe -NoProfile -Command \""Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\UserOnce.ps1' -Raw | Invoke-Expression;\""" /f;
+	};
+);
+
+& {
+	[float] $complete = 0;
+	[float] $increment = 100 / $scripts.Count;
+	foreach( $script in $scripts ) {
+		Write-Progress -Activity 'Running scripts to modify the default user''s registry hive. Do not close this window.' -PercentComplete $complete;
+		& $script;
+		$complete += $increment;
+	}
+} *>&1 >> "C:\Windows\Setup\Scripts\DefaultUser.log";
+		</File>
+		<File path="C:\Windows\Setup\Scripts\FirstLogon.ps1" transformation="Text">
+$scripts = @(
+	{
+		Set-ItemProperty -LiteralPath 'Registry::HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon' -Name 'AutoLogonCount' -Type 'DWord' -Force -Value 0;
+	};
+	{
+		cmd.exe /c "rmdir C:\Windows.old";
+	};
+	{
+		Get-Content -LiteralPath 'C:\Windows\Setup\Scripts\unattend-01.ps1' -Raw | Invoke-Expression;
+	};
+);
+
+& {
+	[float] $complete = 0;
+	[float] $increment = 100 / $scripts.Count;
+	foreach( $script in $scripts ) {
+		Write-Progress -Activity 'Running scripts to finalize your Windows installation. Do not close this window.' -PercentComplete $complete;
+		& $script;
+		$complete += $increment;
+	}
+} *>&1 >> "C:\Windows\Setup\Scripts\FirstLogon.log";
+		</File>
+		<File path="C:\Windows\Setup\Scripts\unattend-01.ps1" transformation="Text">
+############ START ITNG CUSTOM LOGIN SCRIPT ############
+
+	
+# >>>FIRST<<< RUN THIS SEPARATELY :
+#Set-ExecutionPolicy unrestricted -Force
+	<#Note: This MUST be entered manually first, or it will not allow this script to be run. You can run this in Powershell ISE as an administrator and run it all at once. #> 
+
+# >>> Make sure you have the scripts folder with all packages and installers listed below in this script for it to run properly. <<< 
+
+$scripts = "D:\Scripts"
+cd $scripts
+	# Define the log file path
+$logFile = "D:\Scripts\setup_log.txt"
+	# Function to log messages
+function Log-Message {
+    param (
+        [string]$message
+    )
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $logEntry = "$timestamp - $message"
+    Add-Content -Path $logFile -Value $logEntry
+}
+	# Start logging
+Log-Message "Script execution started."
+
+
+	# Begin main script function 
+try {
+		### Setup Powershell 7 to run winget app-installer and windows update ###
+	
+	# Setup PSWindowsUpdate - HAS to be on *new* w11 23H2 machine to work 
+Install-PackageProvider -name NuGet -Minimumversion 2.8.5.201 -Force
+Install-Module PSWindowsUpdate -Force
+Log-Message "PSwindows update complete"
+
+	# Fix WinGet - make sure both of these packages are in the .\scripts folder. You can get most current versions from GitHub. 
+Add-AppPackage -path "D:\Scripts\Microsoft.UI.Xaml.2.8.appx"
+Add-AppPackage -ForceApplicationShutdown "D:\Scripts\winget.msixbundle"
+Log-Message "Winget is fixed"
+	
+	
+################################################################################
+
+
+### Networking Settings Section START ###
+
+	# Disable Windows Firewalls
+Set-NetFirewallProfile -Profile Public -Enabled True
+		#comment out the next line if you are working on a LAPTOP, or a machine that will not have a physical firewall. 
+Set-NetFirewallProfile -Profile Domain, Private -Enabled False
+Log-Message "Disabled Firewalls"
+
+	#Disable IPv6 on all adapters
+		# Get all network adapters that are up
+$adapters = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
+		# Disable IPv6 on each network adapter
+foreach ($adapter in $adapters) {
+    Set-NetAdapterBinding -Name $adapter.Name -ComponentID ms_tcpip6 -Enabled $false
+    Log-Message "IPv6 has been disabled on the adapter: $($adapter.Name)."
+}
+Log-Message "IPv6 has been disabled on all network adapters."
+
+	# Set Network type to PRIVATE (default is public). 
+		# Get all network adapters with a network connection
+$networkAdapters = Get-NetConnectionProfile
+foreach ($adapter in $networkAdapters) {
+    # Check if the adapter is Ethernet or Wi-Fi
+    if ($adapter.InterfaceAlias -like "*Ethernet*" -or $adapter.InterfaceAlias -like "*Wi-Fi*") {
+        Write-Output "Setting network profile for $($adapter.Name) ($($adapter.InterfaceAlias)) to Private."
+        Set-NetConnectionProfile -InterfaceIndex $adapter.InterfaceIndex -NetworkCategory Private
+    }
+}
+Write-Output "All Ethernet and Wi-Fi network profiles set to Private."
+
+	#Enable RDP connections without network level authentication
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" `
+-Name "UserAuthentication" -Value 0 
+		<# notes: 
+		: do not use a property type switch here - it will break the command. 
+		: 0 turns ON allowed RDP connections AND turns off NLA requirement. 
+		: In general, this is the value we want on managed client machines. 
+		: 2 turns off RDP connections entirely. We only want this on non-managed client machines. 
+		#> 
+Log-Message "Enabled RDP connections without network level authentication"
+
+### Networking Settings Section END ###
+
+
+################################################################################
+
+
+### Power Settings Section START ###
+
+	# Set active power plan:
+
+		# Set the power scheme to High Performance (predefined GUID)
+powercfg.exe /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
+
+		# Disable sleep on AC and DC (battery) power
+powercfg -x standby-timeout-ac 0       # Disables sleep when on AC power
+powercfg -x standby-timeout-dc 0       # Disables sleep when on battery power
+
+		# Set the display to turn off after 20 minutes on both AC and DC power
+powercfg -x monitor-timeout-ac 20      # Turns off display after 20 minutes on AC power
+powercfg -x monitor-timeout-dc 20      # Turns off display after 20 minutes on battery power
+
+# Disable hibernate on both AC and DC power
+powercfg -x hibernate-timeout-ac 0     # Disables hibernate when on AC power
+powercfg -x hibernate-timeout-dc 0     # Disables hibernate when on battery power
+
+
+### Power Settings Section END ###
+
+
+################################################################################
+
+
+### Misc section ###
+
+
+	# Set system startup entries - the boot menu will not be displayed, and the default operating system will boot immediately without delay.
+bcdedit.exe /Timeout 0
+Log-Message "system startup set to boot immediately into Windows"
+
+	# Install wmic.exe commands
+dism /online /enable-feature /featurename:LegacyComponents /all
+	<# notes:
+	: 24H2 deprecates this and is no longer installed by default.
+	: We have RMM components and scripts that still use wmic.exe instead of the newer powershell.
+	: This requires a system restart to fully install.
+	: All wmic.exe commands are replaced with powershell commands in this script. 
+	#> 
+	
+	# System failure options
+	
+		# Enable automatic reboot after system failure
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Name "AutoReboot" -Value 1
+		# Set debugging information type to None
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Name "CrashDumpEnabled" -Value 0
+
+Log-Message "System settings updated: AutoReboot enabled and DebugInfoType set to None."
+
+
+	# Update AV Definitions
+Update-MpSignature
+Log-Message "AV signature definitions update completed successfully"
+
+
+	#Set TimeZone to Eastern Time
+Set-TimeZone -Name "Eastern Standard Time"
+Log-Message "EST time zone set"
+
+
+	<# Set TimeZone to Central Time (only used for select clients) - uncomment and comment out EST when needed. 
+Set-TimeZone -Name "Central Standard Time"
+Log-Message "Central time zone set"
+	#>
+
+
+	# Run WinGet to install standard applications 
+		 
+winget.exe install microsoft.powershell --scope machine --accept-source-agreements
+Log-Message "Powershell 7 installed successfully."
+winget.exe install Google.Chrome --scope machine --accept-source-agreements
+Log-Message "Google Chrome installed successfully."
+#winget.exe install Mozilla.Firefox --scope machine --accept-source-agreements
+#Log-Message "Firefox installed successfully."
+winget.exe install adobe.acrobat.reader.64-bit --scope machine --accept-source-agreements
+Log-Message "Adobe Reader installed successfully."
+winget install -e --id Dell.CommandUpdate --scope machine --accept-source-agreements
+Log-Message "Dell Command installed successfully."
+winget.exe upgrade --all
+Log-Message "All software upgrades installed successfully."
+	<# note: The --accept-source-agreements is used to auto select "yes" to use the ms store and allow the command to run automatically.
+	#> 
+
+<# install Sonicwall NetExtender:
+
+msiexec.exe /i "D:\Scripts\NetExtender-x64-10.2.341.msi" /qn /norestart server=#.#.#.# domain=LocalDomain EDITABLE=TRUE netlogon=true ALLUSERS=2
+	<# notes:
+	: /qn = silent install 
+	: /norestart = does not restart PC after install
+	: server = public IP address
+	: domain = LocalDomain always
+	: ALLUSERS=2 installs this for all users on the PC; case sensitive command.
+	#> 
+#> 
+
+
+	# Run Dell command updates and push installation. 
+cd "C:\Program Files (x86)\Dell\CommandUpdate\"
+.\dcu-cli.exe /scan
+.\dcu-cli.exe /applyUpdates -reboot=Disable
+
+
+	# Run Windows Update
+Write-Host "Starting Windows Updates and will automatically reboot the machine when complete."
+Get-WindowsUpdate -AcceptAll -Install -AutoReboot
+
+
+	# Final message
+Log-Message "All tasks completed successfully."
+}
+catch {
+    Log-Message "An error occurred: $_"
+}
+
+# End logging
+Log-Message "Script execution ended."
+Pause
+		</File>
+	</Extensions>
+</unattend>
