@@ -1,11 +1,6 @@
 <#
 TODO: dell command second run
 	
-TODO: add bloatware removal 
-TODO: add default user profile XML 
-TODO: add user profile base change reg keys
-TODO: change multi setup log to append to 1 long setup log??? 
-TODO: - add spacer in it for section??
 TODO: on last script: auto load setup.txt
 TODO: add remove c:sources folder at end of last pass script!
 TODO: add rmm installer as subfolder in c:\sources?
