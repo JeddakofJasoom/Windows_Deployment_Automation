@@ -1,10 +1,30 @@
-# CREATE LOG FILE AT THIS PATH:
-$logFile = "C:\Sources\post_setup_log.txt"	
-	# Create log file using the variable defined above.
-	# Change TXT filename as needed!
-New-Item -ItemType File -Path $logFile -Force | Out-Null
+<#
+TODO: dell command second run
+	
+TODO: add bloatware removal 
+TODO: add default user profile XML 
+TODO: add user profile base change reg keys
+TODO: change multi setup log to append to 1 long setup log??? 
+TODO: - add spacer in it for section??
+TODO: on last script: auto load setup.txt
+TODO: add remove c:sources folder at end of last pass script!
+TODO: add rmm installer as subfolder in c:\sources?
+TODO: add rename computer prompt 
+TODO: add rename itngadmin password prompt
+TODO: 
+TODO: 
+TODO: 
+TODO: 
+#>
+
+
+
+
+
 
 # CREATE CUSTOM FUNCTION TO LOG OUTPUT MESSAGES IN THIS SCRIPT:
+
+$logFile = "C:\Sources\New_Setup_LOG.txt"
 function Log-Message { 
 param ( [string]$message, [string]$displayMessage )
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
@@ -15,7 +35,7 @@ if ($displayMessage) {
    Write-Host "$logEntry" -ForegroundColor Yellow
 }  Add-Content -Path $logFile -Value $logEntry }
 	# START LOGGING:
-Log-Message "Script execution started."
+Log-Message "New Setup Part 3 Script has started here."
 
 # RUN DELL COMMAND UPDATE
 <#

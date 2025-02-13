@@ -1,23 +1,17 @@
-<# to do:
-- log function 
-- dism 
-- sfc
-- dell command second run
-- windows updates again
-- run checks for:
-	firewalls
-	network profile
-	ipv6 disable
-	rdp turned on with 3389 allowed rule
-	
-add bloatware removal
-add defualt user profile XML 
+<#
+TODO: windows updates again
+TODO: dell command 
+
+TODO: change multi setup log to append to 1 long setup log??? 
+TODO: remove previous reg key to run the previous script
+TODO: add reg key to run new_setup_part_3.ps1 on next login
+TODO: add reg key to auto login as admin account 
 
 #>
 
 
 # CREATE LOG FILE AT THIS PATH:
-$logFile = "C:\Sources\post_setup_log.txt"	
+$logFile = "C:\Sources\New_Setup_LOG.txt"
 	# Create log file using the variable defined above.
 	# Change TXT filename as needed!
 New-Item -ItemType File -Path $logFile -Force | Out-Null
