@@ -171,5 +171,6 @@ $winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAct
 
 # REBOOT PC 
 Write-Host "Windows updates are installed and require reboot. Rebooting PC in 5 seconds..." -ForegroundColor Red
+Log-Message "End of Part 1 setup script."
 Start-Sleep -Seconds 5 #wait 5 seconds to complete logging
 Restart-Computer -force

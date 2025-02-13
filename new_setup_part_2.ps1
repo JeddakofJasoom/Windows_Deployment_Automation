@@ -10,13 +10,10 @@ TODO: add reg key to auto login as admin account
 #>
 
 
-# CREATE LOG FILE AT THIS PATH:
-$logFile = "C:\Sources\New_Setup_LOG.txt"
-	# Create log file using the variable defined above.
-	# Change TXT filename as needed!
-New-Item -ItemType File -Path $logFile -Force | Out-Null
 
 # CREATE CUSTOM FUNCTION TO LOG OUTPUT MESSAGES IN THIS SCRIPT:
+
+$logFile = "C:\Sources\New_Setup_LOG.txt"
 function Log-Message { 
 param ( [string]$message, [string]$displayMessage )
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
@@ -27,12 +24,13 @@ if ($displayMessage) {
    Write-Host "$logEntry" -ForegroundColor Yellow
 }  Add-Content -Path $logFile -Value $logEntry }
 	# START LOGGING:
-Log-Message "Script execution started."	
+Log-Message "New Setup Part 2 Script has started here."
 
-#### CHECK NETWORK STATUS CHANGES ####
+
+		#### CHECK NETWORK STATUS CHANGES ####
 
 # CHECK IF IPV6 IS DISABLED:
-	$adapters = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
+	$adapters = Get-NetAdapter
 	$ipv6Disabled = $true
 	$ipv6Status = Get-NetAdapterBinding -Name $adapter.Name | Where-Object { $_.ComponentID -eq 'ms_tcpip6' }
 foreach ($adapter in $adapters) {
@@ -61,58 +59,35 @@ if ($fDenyTSConnections -eq 0) {
 # CHECK IF NETWORK TYPE IS PRIVATE FOR ALL ADAPTERS:
 $networkAdapters = Get-NetConnectionProfile
 foreach ($adapter in $networkAdapters) { 
-	# Loop through each network adapter
-	# Check if the adapter is Ethernet or Wi-Fi
 if ($adapter.InterfaceAlias -like "*Ethernet*" -or $adapter.InterfaceAlias -like "*Wi-Fi*") {
 		# Check if the network profile is already set to Private
-		if ($adapter.NetworkCategory -eq "Private") {
-			Log-Message "Network profile for $($adapter.Name) ($($adapter.InterfaceAlias)) is already set to Private."
-		} else {
-			Log-Message "Network profile for $($adapter.Name) ($($adapter.InterfaceAlias)) is NOT set to Private. Current setting: $($adapter.NetworkCategory)."
+	if ($adapter.NetworkCategory -eq "Private") {
+		Log-Message "Network profile for $($adapter.Name) ($($adapter.InterfaceAlias)) is already set to Private."
+	} else {
+		Log-Message "Network profile for $($adapter.Name) ($($adapter.InterfaceAlias)) is NOT set to Private. Current setting: $($adapter.NetworkCategory)."
 } } }
 Log-Message "Network status checks completed. See above log messages for current status."
 
-##### CHECK IF WMIC.EXE IS ENABLED AND INSTALL IF NECESSARY #####
 
 # Check if WMIC.EXE exists in the system PATH
 $wmicExists = Get-Command wmic -ErrorAction SilentlyContinue
-
 if ($wmicExists) {
    Log-Message "WMIC.EXE is installed."
 } else {
 	Add-WindowsCapability -Online -Name WMIC~~~~ 
-		Log-Message "WMIC was not installed. Pushed installation command." 
-# RESYNC TIME CLOCK (forces time update to new time zone)
-Stop-Service w32time
-	Start-Sleep -Seconds 1
-Start-Service w32time
-	Start-Sleep -Seconds 1
-w32tm /resync /Force 
-	start-Sleep -Seconds 2
-Log-Message "Synced system clock to $TimeZone" 
+	Log-Message "WMIC was not installed. Pushed installation command." 
+}
 
-	
 # CHECK FOR MISSING UPDATES FOR WINGET SOFTWARE
 winget.exe upgrade --all
 Log-Message "All Winget-based software are up to date."
 
-###SET ACTIVE POWER PLAN:####
 
-	# Set the power scheme to High Performance (predefined GUID)
+#SET ACTIVE POWER PLAN:
 powercfg.exe /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
-	# Disable sleep on AC and DC (battery) power
-powercfg -x standby-timeout-ac 0       # Disables sleep when on AC power
-powercfg -x standby-timeout-dc 0       # Disables sleep when on battery power
-	# Set the display to turn off after 20 minutes on both AC and DC power
-powercfg -x monitor-timeout-ac 20      # Turns off display after 20 minutes on AC power
-powercfg -x monitor-timeout-dc 20      # Turns off display after 20 minutes on battery power
-	# Disable hibernate on both AC and DC power
-powercfg -x hibernate-timeout-ac 0     # Disables hibernate when on AC power
-powercfg -x hibernate-timeout-dc 0     # Disables hibernate when on battery power
 
 
 # INSTALL WINDOWS UPDATES 
-
 $winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction SilentlyContinue 2>&1
 	Log-Message "Installed additional Windows updates: $winupdateResult"
 
@@ -146,10 +121,12 @@ while (-not $success -and $retryCount -lt $maxRetries) {
 #>
 
 
+####### need to add reg key to run new_setup_part_2.ps1 on next logon
+####### need to add reg key to auto login as admin on next login
 
-# End logging to setup log file.
-Log-Message "POST-setup script execution ended."
 
-# Force reboot after 5-second delay before reboot to allow logging to finalize. 
-Start-Sleep -Seconds 5
-Restart-Computer -Force
+# REBOOT PC 
+Write-Host "Windows updates are installed and require reboot. Rebooting PC in 5 seconds..." -ForegroundColor Red
+Log-Message "End of Part 2 setup script."
+Start-Sleep -Seconds 5 #wait 5 seconds to complete logging
+Restart-Computer -force
