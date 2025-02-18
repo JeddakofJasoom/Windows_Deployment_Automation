@@ -4,23 +4,13 @@ TODO: dell command second run
 TODO: add bloatware removal 
 TODO: add default user profile XML 
 TODO: add user profile base change reg keys
-TODO: change multi setup log to append to 1 long setup log??? 
+
 TODO: - add spacer in it for section??
-TODO: on last script: auto load setup.txt
-TODO: add remove c:sources folder at end of last pass script!
-TODO: add rmm installer as subfolder in c:\sources?
-TODO: add rename computer prompt 
-TODO: add rename itngadmin password prompt
 TODO: 
 TODO: 
 TODO: 
 TODO: 
 #>
-
-
-
-
-
 
 # CREATE CUSTOM FUNCTION TO LOG OUTPUT MESSAGES IN THIS SCRIPT:
 
@@ -43,12 +33,6 @@ cd "c:\program files (x86)\Dell\CommandUpdate\"
 & ".\dcu-cli.exe" /scan 
 $applyResult = & ".\dcu-cli.exe" /ApplyUpdates -reboot=Disable 2>&1
 	Log-Message "Dell Command updates installed: $applyResult" 
-
-
-# SYSTEM CLEANUP
-dism /online /cleanup-image /restorehealth
-dism /online /cleanup-image /startcomponentcleanup
-sfc /scannow
 
 # FORCE CHANGE ITNGADMIN PASSWORD FROM DEFAULT:
 Write-Host "The current password for the local account ITNGAdmin is set to the default of 'password' and MUST be changed." -ForegroundColor Red
@@ -76,16 +60,22 @@ Rename-Computer -NewName $newName -Force
 }
 
 
+### SETS AUTO LOGIN AS ".\ITNGAdmin" ON NEXT LOGIN
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
+Set-ItemProperty -Path $RegPath -Name "DefaultDomainName" -Value ""
+Set-ItemProperty -Path $RegPath -Name "DefaultUsername" -Value ".\ITNGAdmin"
+Set-ItemProperty -Path $RegPath -Name "DefaultPassword" -Value "password"
+Set-ItemProperty -Path $RegPath -Name "AutoAdminLogon" -Value "1"Set-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
 
-####### need to add reg key to remove run new_setup_part_3.ps1 
-####### need to add reg key to run new_setup_part_4.ps1 on next logon
-####### need to add reg key to auto login as admin on next login
-
-
+### RUN NEW_SETUP_PART_4.PS1 ON NEXT LOGON
+$ScriptPath = "C:\Sources\new_setup_part_4.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`""
+Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
 
 
 # REBOOT PC 
 Write-Host "Windows updates are installed and require reboot. Rebooting PC in 5 seconds..." -ForegroundColor Red
-	Log-Message "End of Part 3 setup script."
+Log-Message "End of Part 2 setup script."
 Start-Sleep -Seconds 5 #wait 5 seconds to complete logging
 Restart-Computer -force

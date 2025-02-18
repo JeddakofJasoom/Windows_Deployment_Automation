@@ -1,14 +1,8 @@
 <#
 TODO: add try / catch and throw error if sources folder doesn't get copied over?? add a throw??
-
-TODO: 
-TODO: add reg key to run new_setup_part_2.ps1 on next login
-TODO: add reg key to auto login as admin account 
-
 #>
 
-
- <# Trying out new method using a batch file labeled "RUNME.bat" in the flash drive's Scripts folder for easy start. #>
+#Trying new method of doing an auto logon through the autounattend.XML file on new load. You can run this script using the "RUNME.bat" batch file in the D:\Scripts folder. 
 
 ############ START CUSTOM LOGIN SCRIPT ############
 
@@ -126,29 +120,10 @@ w32tm /resync /Force
 	start-Sleep -Seconds 2
 Log-Message "Synced system clock to $TimeZone" 
 
-# INSTALL WMIC.EXE (Deprecated by Microsoft; we use this in RMM tasks): 
-Add-WindowsCapability -Online -Name WMIC~~~~ -ErrorAction Stop
-
 # INSTALL 'NUGET' PACKAGE FROM MICROSOFT 
 	Log-Message "Installing latest version of 'NuGet' package from Microsoft"
 $ConfirmPreference = 'None'	# Suppress any confirmation prompts
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-
-# INSTALL *STANDARD* APPLICATIONS USING 'WinGet'
-	Log-Message "Running 'WinGet' to install standard software applications."
-winget.exe install Microsoft.Powershell --scope machine --silent --accept-source-agreements
-winget.exe install Google.Chrome --scope machine --silent --accept-source-agreements
-winget.exe install Adobe.Acrobat.Reader.64-bit --scope machine --silent --accept-source-agreements
-winget.exe install Dell.CommandUpdate --scope machine --silent --accept-source-agreements
-
-# INSTALL OFFICE 365
-	# Note: needs the additional parameters to prevent GUI popup. 
-	$sources = "C:\Sources"
-	$Office365InstallPath = "$sources\OfficeSetup.exe"
-	$configurationFilePath = "$sources\O365Configuration.xml"
-	$arguments = "/configure $configurationFilePath"
-Start-Process -FilePath $Office365InstallPath -ArgumentList $arguments -Wait 
-
 
 # INSTALL PS MODULE TO ALLOW POWERSHELL 7 TO RUN WINDOWS UPDATE.#
 Install-Module PSWindowsUpdate -Force -Wait
@@ -165,9 +140,18 @@ Set-Service -Name wuauserv -StartupType Automatic -Status running
 $winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction Continue 2>&1
 	Log-Message "Installed additional Windows updates: $winupdateResult"
 
-####### need to add reg key to run new_setup_part_2.ps1 on next logon
-####### need to add reg key to auto login as admin on next login
+### SETS AUTO LOGIN AS ".\ITNGAdmin" ON NEXT LOGIN
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
+Set-ItemProperty -Path $RegPath -Name "DefaultDomainName" -Value ""
+Set-ItemProperty -Path $RegPath -Name "DefaultUsername" -Value ".\ITNGAdmin"
+Set-ItemProperty -Path $RegPath -Name "DefaultPassword" -Value "password"
+Set-ItemProperty -Path $RegPath -Name "AutoAdminLogon" -Value "1"Set-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
 
+### RUN NEW_SETUP_PART_2.PS1 ON NEXT LOGON
+$ScriptPath = "C:\Sources\new_setup_part_2.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`""
+Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
 
 # REBOOT PC 
 Write-Host "Windows updates are installed and require reboot. Rebooting PC in 5 seconds..." -ForegroundColor Red

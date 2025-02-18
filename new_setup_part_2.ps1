@@ -1,11 +1,5 @@
 <#
-TODO: windows updates again
-TODO: dell command 
 
-TODO: change multi setup log to append to 1 long setup log??? 
-TODO: remove previous reg key to run the previous script
-TODO: add reg key to run new_setup_part_3.ps1 on next login
-TODO: add reg key to auto login as admin account 
 
 #>
 
@@ -88,41 +82,42 @@ powercfg.exe /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
 
 
 # INSTALL WINDOWS UPDATES 
-$winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction SilentlyContinue 2>&1
+$winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction Continue 2>&1
 	Log-Message "Installed additional Windows updates: $winupdateResult"
 
+# INSTALL WMIC.EXE (Deprecated by Microsoft; we use this in RMM tasks): 
+Add-WindowsCapability -Online -Name WMIC~~~~ -ErrorAction Stop
 
-<#
+# INSTALL *STANDARD* APPLICATIONS USING 'WinGet'
+	Log-Message "Running 'WinGet' to install standard software applications."
+winget.exe install Microsoft.Powershell --scope machine --silent --accept-source-agreements
+winget.exe install Google.Chrome --scope machine --silent --accept-source-agreements
+winget.exe install Adobe.Acrobat.Reader.64-bit --scope machine --silent --accept-source-agreements
+winget.exe install Dell.CommandUpdate --scope machine --silent --accept-source-agreements
 
-# RUN WINDOWS UPDATE:
-	# Import Windows Update PS module (needs to have PS ver 7 installed)
-Import-Module PSWindowsUpdate
-	# Start windows update service (if not already running)
-Set-Service -Name wuauserv -StartupType Automatic
-Start-Service -Name wuauserv
-	# try installing windows updates, if any errors, retry updates up to 2 times and log errors:
-$maxRetries = 2
-$retryCount = 0
-$success = $false
-while (-not $success -and $retryCount -lt $maxRetries) {
-    try {
-        $winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction Stop 2>&1
-        Log-Message "Installed additional Windows updates: $winupdateResult"
-        $success = $true
-    } catch { $retryCount++
-		$errorMsg = $_.Exception.Message
-        Log-Message "ERROR: Failed to install Windows Updates (Attempt $retryCount of $maxRetries). Error: $errorMsg"
-    if ($retryCount -lt $maxRetries) { 
-        Log-Message "Retrying Windows Update again with attempt #$retryCount..."
-    } else {
-        Log-Message "Windows Update Installation FAILED after $retryCount attempts. Check windows updates status on next login."
-} } }
-
-#>
+# INSTALL OFFICE 365
+	# Note: needs the additional parameters to prevent GUI popup. 
+	$sources = "C:\Sources"
+	$Office365InstallPath = "$sources\OfficeSetup.exe"
+	$configurationFilePath = "$sources\O365Configuration.xml"
+	$arguments = "/configure $configurationFilePath"
+Start-Process -FilePath $Office365InstallPath -ArgumentList $arguments -Wait
 
 
-####### need to add reg key to run new_setup_part_2.ps1 on next logon
-####### need to add reg key to auto login as admin on next login
+
+
+### SETS AUTO LOGIN AS ".\ITNGAdmin" ON NEXT LOGIN
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
+Set-ItemProperty -Path $RegPath -Name "DefaultDomainName" -Value ""
+Set-ItemProperty -Path $RegPath -Name "DefaultUsername" -Value ".\ITNGAdmin"
+Set-ItemProperty -Path $RegPath -Name "DefaultPassword" -Value "password"
+Set-ItemProperty -Path $RegPath -Name "AutoAdminLogon" -Value "1"Set-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
+
+### RUN NEW_SETUP_PART_3.PS1 ON NEXT LOGON
+$ScriptPath = "C:\Sources\new_setup_part_3.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`""
+Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
 
 
 # REBOOT PC 
