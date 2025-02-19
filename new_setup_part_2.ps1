@@ -1,10 +1,3 @@
-<#
-
-
-#>
-
-
-
 # CREATE CUSTOM FUNCTION TO LOG OUTPUT MESSAGES IN THIS SCRIPT:
 
 $logFile = "C:\Sources\New_Setup_LOG.txt"
@@ -72,14 +65,8 @@ if ($wmicExists) {
 	Log-Message "WMIC was not installed. Pushed installation command." 
 }
 
-# CHECK FOR MISSING UPDATES FOR WINGET SOFTWARE
-winget.exe upgrade --all
-Log-Message "All Winget-based software are up to date."
-
-
 #SET ACTIVE POWER PLAN:
 powercfg.exe /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
-
 
 # INSTALL WINDOWS UPDATES 
 $winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction Continue 2>&1
@@ -94,6 +81,12 @@ winget.exe install Microsoft.Powershell --scope machine --silent --accept-source
 winget.exe install Google.Chrome --scope machine --silent --accept-source-agreements
 winget.exe install Adobe.Acrobat.Reader.64-bit --scope machine --silent --accept-source-agreements
 winget.exe install Dell.CommandUpdate --scope machine --silent --accept-source-agreements
+
+# CHECK FOR MISSING UPDATES FOR WINGET SOFTWARE
+winget.exe upgrade --all
+Log-Message "All Winget-based software are up to date."
+
+
 
 # INSTALL OFFICE 365
 	# Note: needs the additional parameters to prevent GUI popup. 

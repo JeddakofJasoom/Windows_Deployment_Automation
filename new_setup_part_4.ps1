@@ -1,13 +1,7 @@
 <#
 
-TODO: add remove c:sources folder at end of last pass script!
 TODO: add rmm installer as subfolder in c:\sources?
-TODO: add rename computer prompt 
-TODO: add rename itngadmin password prompt
-TODO: 
-TODO: 
-TODO: 
-TODO: 
+ 
 #>
 
 # CREATE CUSTOM FUNCTION TO LOG OUTPUT MESSAGES IN THIS SCRIPT:
@@ -34,7 +28,7 @@ Remove-ItemProperty -Path $RegPath -Name "AutoAdminLogon" -Value "1"
 Remove-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
 Log-Message "Removed all registry keys to disable auto logon."
 
-### RUN NEW_SETUP_PART_3.PS1 ON NEXT LOGON
+### REMOVE NEW_SETUP_PART_3.PS1 ON NEXT LOGON
 $ScriptPath = "C:\Sources\new_setup_part_3.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
 $ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`""
@@ -80,9 +74,6 @@ Rename-Computer -NewName $newName -Force
 } else {
 	Log-Message "Computer name will remain as: '$currentName'"
 }
-
-
-
 
 # End logging to setup log file.
 Log-Message "End of Part 4 setup script."

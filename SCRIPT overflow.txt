@@ -1,0 +1,64 @@
+answer file 
+auto login as admin
+script 1 - 
+	stop winupdate 
+	copy d:\Scripts folder to C:\sources
+	create log file
+	disable ipv6 on net adapters
+	set network to private on adapters
+	enable windows firewall
+	add port 3389 RDP allow fw rule
+	enable RDP with NLA
+	set power config (can't get laptops to work yet have to do manual laptops)
+	set boot menu to 5 second startup delay
+	auto reboot after system fail
+	set numlock always on
+	set debug info to none
+	set time zone to EST
+	Install Nuget from Msoft
+	install ps module to run winupdate
+	update win defender
+	restart winupdate service
+	run windows updates
+	add reg key change to auto login as itngadmin
+	add reg key to run script 2 on next login 
+	wait 5 seconds
+	force reboot
+auto login as admin
+script 2 - 
+	check to confirm network changes, append to log file
+	run windows updates again 
+	install WMIC.exe 
+	run winget to install: Powershell7, Chrome, Adobe, Dell command
+	update apps through winget
+	install office 365
+	add reg key to run script 3 on next login
+	wiat 5 seconds
+	force reboot
+auto login as admin
+script 3 -
+	user profile settings changes:
+		disable widgets
+		disable taskview
+		disable windows search random icon
+		taskbar align to left
+		remove copilot
+		remove outlook (new) 
+		set numlock always on
+		disable windows search web results
+	run dell command again
+	add reg key to auto login as itngadmin
+	add reg key to auto run part 4
+	wait 5 seconds 
+	reboot
+auto login as admin
+script 4 -
+	remove reg key to autologin as itngadmin
+	remove reg key to run script 3 on next login
+	run dell command
+	run dism and sfc
+	prompt manual input to force itngadmin default password change
+	prompt (optional) manual input for computer name change
+	copies the log file to itngadmin\desktop
+	removes the c:\sources folder 
+	opens the log file in notepad for final review. 

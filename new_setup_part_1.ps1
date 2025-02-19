@@ -96,10 +96,6 @@ bcdedit.exe /timeout 5
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Name "AutoReboot" -Value 1 -ErrorAction Stop
 	Log-Message "AutoReboot after system failure has been successfully enabled."
 
-# SET NUMLOCK TO ALWAYS ON
-Set-ItemProperty -Path "Registry::HKEY_USERS\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Value "2" 
-	Log-Message "Set Numlock to always on"
-
 # SET DEBUGGING INFORMATION TYPE TO NONE
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Name "CrashDumpEnabled" -Value 0 -ErrorAction Stop
 	Log-Message "Debugging information type has been set to None."

@@ -1,15 +1,8 @@
 <#
-TODO: dell command second run
-	
 TODO: add bloatware removal 
 TODO: add default user profile XML 
-TODO: add user profile base change reg keys
-
+TODO: add user profile base change reg keys (TEST FIRST!)
 TODO: - add spacer in it for section??
-TODO: 
-TODO: 
-TODO: 
-TODO: 
 #>
 
 # CREATE CUSTOM FUNCTION TO LOG OUTPUT MESSAGES IN THIS SCRIPT:
@@ -28,37 +21,32 @@ if ($displayMessage) {
 Log-Message "New Setup Part 3 Script has started here."
 
 
+###user profile settings change: 
+
+# DISABLE WIDGETS
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft" -Name "Dsh"
+New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -Name "AllowNewsAndInterests" -PropertyType DWORD -Value 0 -Force
+# DISABLE TASKVIEW
+New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -PropertyType DWORD -Value 0 -Force
+# DISABLE THE RANDOM ICON LINKS IN WINDOWS SEARCH
+New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows" -Name "Windows Search"
+# TASKBAR ALIGN TO LEFT 
+New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -PropertyType DWORD -Value 0 -Force
+# REMOVE "COPILOT" FOR ALL USERS
+Get-AppxPackage -AllUsers "Microsoft.Copilot" | Remove-AppxPackage
+# REMOVE "OUTLOOK (NEW)" FOR ALL USERS
+Get-AppxPackage -AllUsers "Microsoft.OutlookForWindows" | Remove-AppxPackage
+# SET NUMLOCK TO ALWAYS ON
+Set-ItemProperty -Path "Registry::HKEY_USERS\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Value "2" 
+# DISABLE 'WEB SEARCH RESULTS' IN WINDOWS SEARCH 
+New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows" -name "Explorer" 
+New-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "DisableSearchBoxSuggestions" -PropertyType DWORD -Value 1 -Force
+
 # RUN DELL COMMAND UPDATE
 cd "c:\program files (x86)\Dell\CommandUpdate\"
 & ".\dcu-cli.exe" /scan 
 $applyResult = & ".\dcu-cli.exe" /ApplyUpdates -reboot=Disable 2>&1
 	Log-Message "Dell Command updates installed: $applyResult" 
-
-# FORCE CHANGE ITNGADMIN PASSWORD FROM DEFAULT:
-Write-Host "The current password for the local account ITNGAdmin is set to the default of 'password' and MUST be changed." -ForegroundColor Red
-Write-Host "Please enter the password you want to change it to here:" -Foregroundcolor Yellow
-$desiredPassword = Read-Host 
-$newPassword = ConvertTo-SecureString $desiredPassword -AsPlainText -Force
-Set-LocalUser -Name "ITNGAdmin" -Password $newPassword 
-Write-Host "Password for ITNGAdmin has been changed to: '$desiredPassword'" -ForegroundColor Green
-Log-Message "Changed ITNGAdmin password from its default." 
-
-# CHANGE COMPUTER NAME WITH MANUAL INPUT:
-$currentName = $env:COMPUTERNAME
-    Write-Host "The current computername is: '$currentName'." -ForegroundColor Yellow
-    Write-Host  "Do you want to change the computer name NOW? Y/N" -ForegroundColor Red
-$response = Read-Host 
-if ($response -match '^(Y|y|Yes|yes)$') {
-	Write-Host "Please enter the new computer name:" -ForegroundColor Yellow
-$newName = Read-Host 
-	Write-Host "Current Computer Name: $currentName" -ForegroundColor Yellow
-	Write-Host "New Computer Name will be: $newName" -ForegroundColor Green
-Rename-Computer -NewName $newName -Force
-	Log-Message "Computer name changed to '$newName'"
-} else {
-	Log-Message "Computer name will remain as: '$currentName'"
-}
-
 
 ### SETS AUTO LOGIN AS ".\ITNGAdmin" ON NEXT LOGIN
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
