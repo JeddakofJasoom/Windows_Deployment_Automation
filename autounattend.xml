@@ -107,16 +107,14 @@
 			</ImageInstall>
 		</component>
 	</settings>
-<!-- THIS WORKS UP TO HERE as of 10:15 1-5-2025. -->
-
 <settings pass="generalize">
 	</settings>
-	
 <settings pass="specialize">
 	</settings>
-
-<settings pass="auditSystem"></settings>
-<settings pass="auditUser"></settings>
+<settings pass="auditSystem">
+	</settings>
+<settings pass="auditUser">
+	</settings>
 <settings pass="oobeSystem">
 	<component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
 		<InputLocale>0409:00000409</InputLocale>
@@ -125,10 +123,18 @@
 		<UserLocale>en-US</UserLocale>
 	</component>
 	<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
-        <UserAccounts>
+        <OOBE>
+			<SkipMachineOOBE>true</SkipMachineOOBE>
+            <SkipUserOOBE>true</SkipUserOOBE>
+            <ProtectYourPC>1</ProtectYourPC>
+            <HideEULAPage>true</HideEULAPage>
+            <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+            <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+		</OOBE>
+		<UserAccounts>
             <LocalAccounts>
                 <LocalAccount wcm:action="add">
-                    <Name>admin1</Name>
+                    <Name>ITNGAdmin</Name>
                     <Group>Administrators</Group>
                     <Password>
                         <Value>password</Value>
@@ -138,7 +144,7 @@
             </LocalAccounts>
         </UserAccounts>
         <AutoLogon>
-            <Username>admin1</Username>
+            <Username>ITNGAdmin</Username>
             <Enabled>true</Enabled>
             <LogonCount>1</LogonCount>
             <Password>
@@ -146,17 +152,6 @@
                 <PlainText>true</PlainText>
             </Password>
         </AutoLogon>
-		<OOBE>
-			<SkipMachineOOBE>true</SkipMachineOOBE>
-            <SkipUserOOBE>true</SkipUserOOBE>
-            <ProtectYourPC>1</ProtectYourPC>
-            <HideEULAPage>true</HideEULAPage>
-            <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
-            <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
-		</OOBE>
-<!-- THIS WORKS AND LOGS INTO NEW USER ACCOUNT AS EXPECTED as of 11:47 2-12-205 --> 
-
-<!-- tested, this runs script automatically - did not auto login though the second time I ran it. Need to test on newly wiped drive. --> 
 	<FirstLogonCommands>
 		<SynchronousCommand wcm:action="add">
 			<Order>1</Order>
@@ -164,10 +159,6 @@
 			<CommandLine>powershell.exe -NoExit -ExecutionPolicy Bypass -File "D:\Scripts\new_setup_part_1.ps1"</CommandLine>
 		</SynchronousCommand>
 	</FirstLogonCommands>
-
 	</component>
-
 </settings>
-
-
 </unattend>

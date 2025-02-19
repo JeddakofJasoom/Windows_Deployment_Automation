@@ -20,6 +20,10 @@ if ($displayMessage) {
 	# START LOGGING:
 Log-Message "New Setup Part 3 Script has started here."
 
+### REMOVE CURRENT REG KEY for NEW_SETUP_PART_3.PS1
+$RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+Remove-Item -Path $RegPath 
+
 
 ###user profile settings change: 
 
@@ -48,17 +52,12 @@ cd "c:\program files (x86)\Dell\CommandUpdate\"
 $applyResult = & ".\dcu-cli.exe" /ApplyUpdates -reboot=Disable 2>&1
 	Log-Message "Dell Command updates installed: $applyResult" 
 
-### SETS AUTO LOGIN AS ".\ITNGAdmin" ON NEXT LOGIN
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
-Set-ItemProperty -Path $RegPath -Name "DefaultDomainName" -Value ""
-Set-ItemProperty -Path $RegPath -Name "DefaultUsername" -Value ".\ITNGAdmin"
-Set-ItemProperty -Path $RegPath -Name "DefaultPassword" -Value "password"
-Set-ItemProperty -Path $RegPath -Name "AutoAdminLogon" -Value "1"Set-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
 
 ### RUN NEW_SETUP_PART_4.PS1 ON NEXT LOGON
+New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "RunOnce"
 $ScriptPath = "C:\Sources\new_setup_part_4.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
-$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`""
+$RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
 Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
 
 

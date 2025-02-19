@@ -8,7 +8,7 @@ TODO: add try / catch and throw error if sources folder doesn't get copied over?
 
 
 # STOP WINDOWS UPDATE SERVICE (temporarily)
-Set-Service -Name wuauserv -StartupType Disabled -Status stopped
+Set-Service -Name wuauserv -StartupType Disabled -Status stopped -Force
 
 # CREATE LOCAL SOURCES FOLDER FOR INSTALLATION AND LOGGING:
 	# Define folders for holding the installers, scripts, and log files. 
@@ -122,7 +122,7 @@ $ConfirmPreference = 'None'	# Suppress any confirmation prompts
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 
 # INSTALL PS MODULE TO ALLOW POWERSHELL 7 TO RUN WINDOWS UPDATE.#
-Install-Module PSWindowsUpdate -Force -Wait
+Install-Module PSWindowsUpdate -Force
 Log-Message "Installed Powershell Module 'PSWindowsUpdate' to enable Windows Updates through Powershell"
 
 # UPDATE WINDOWS DEFENDER WITH POWERSHELL
@@ -141,12 +141,17 @@ $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
 Set-ItemProperty -Path $RegPath -Name "DefaultDomainName" -Value ""
 Set-ItemProperty -Path $RegPath -Name "DefaultUsername" -Value ".\ITNGAdmin"
 Set-ItemProperty -Path $RegPath -Name "DefaultPassword" -Value "password"
-Set-ItemProperty -Path $RegPath -Name "AutoAdminLogon" -Value "1"Set-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
+Set-ItemProperty -Path $RegPath -Name "AutoAdminLogon" -Value "1"
+Set-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
+# prevents screen from locking on auto login to monitor running script processes:
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Personalization" -Force
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -Value "1"
 
 ### RUN NEW_SETUP_PART_2.PS1 ON NEXT LOGON
+New-Item -path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "RunOnce" -Force
 $ScriptPath = "C:\Sources\new_setup_part_2.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
-$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`""
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
 Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
 
 # REBOOT PC 

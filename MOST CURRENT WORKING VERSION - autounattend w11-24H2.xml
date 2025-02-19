@@ -106,9 +106,59 @@
 				</OSImage>
 			</ImageInstall>
 		</component>
-		<!-- THIS WORKS UP TO HERE as of 10:15 1-5-2025. -->
-	
-	
-	
 	</settings>
+<settings pass="generalize">
+	</settings>
+<settings pass="specialize">
+	</settings>
+<settings pass="auditSystem">
+	</settings>
+<settings pass="auditUser">
+	</settings>
+<settings pass="oobeSystem">
+	<component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+		<InputLocale>0409:00000409</InputLocale>
+		<SystemLocale>en-US</SystemLocale>
+		<UILanguage>en-US</UILanguage>
+		<UserLocale>en-US</UserLocale>
+	</component>
+	<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+        <OOBE>
+			<SkipMachineOOBE>true</SkipMachineOOBE>
+            <SkipUserOOBE>true</SkipUserOOBE>
+            <ProtectYourPC>1</ProtectYourPC>
+            <HideEULAPage>true</HideEULAPage>
+            <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+            <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+		</OOBE>
+		<UserAccounts>
+            <LocalAccounts>
+                <LocalAccount wcm:action="add">
+                    <Name>ITNGAdmin</Name>
+                    <Group>Administrators</Group>
+                    <Password>
+                        <Value>password</Value>
+                        <PlainText>true</PlainText>
+                    </Password>
+                </LocalAccount>
+            </LocalAccounts>
+        </UserAccounts>
+        <AutoLogon>
+            <Username>ITNGAdmin</Username>
+            <Enabled>true</Enabled>
+            <LogonCount>1</LogonCount>
+            <Password>
+                <Value>password</Value>
+                <PlainText>true</PlainText>
+            </Password>
+        </AutoLogon>
+	<FirstLogonCommands>
+		<SynchronousCommand wcm:action="add">
+			<Order>1</Order>
+			<Description>Run New Setup Part 1 Script</Description>
+			<CommandLine>powershell.exe -NoExit -ExecutionPolicy Bypass -File "D:\Scripts\new_setup_part_1.ps1"</CommandLine>
+		</SynchronousCommand>
+	</FirstLogonCommands>
+	</component>
+</settings>
 </unattend>

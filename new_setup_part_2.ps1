@@ -13,18 +13,21 @@ if ($displayMessage) {
 	# START LOGGING:
 Log-Message "New Setup Part 2 Script has started here."
 
+### REMOVE NEW_SETUP_PART_2.PS1 reg key 
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+Remove-Item -Path $RegPath 
 
 		#### CHECK NETWORK STATUS CHANGES ####
 
 # CHECK IF IPV6 IS DISABLED:
-	$adapters = Get-NetAdapter
-	$ipv6Disabled = $true
-	$ipv6Status = Get-NetAdapterBinding -Name $adapter.Name | Where-Object { $_.ComponentID -eq 'ms_tcpip6' }
+$adapters = Get-NetAdapter
+$ipv6Status = "Get-NetAdapterBinding -Name $adapter.Name | Where-Object { $_.ComponentID -eq 'ms_tcpip6' }"
+$ipv6Disabled = $true
 foreach ($adapter in $adapters) {
 	if ($ipv6Status.Enabled -eq $false) {
         Log-Message "IPv6 is disabled on adapter: $($adapter.Name)."
     } else {
-        Log-Message "WARNING: IPv6 is STILL ENABLED on adapter: $($adapter.Name)."
+        Log-Message "ERROR: IPv6 is STILL ENABLED on adapter: $($adapter.Name)."
 } }
 
 # CONFIRM FIREWALL RULE
@@ -72,9 +75,6 @@ powercfg.exe /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
 $winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction Continue 2>&1
 	Log-Message "Installed additional Windows updates: $winupdateResult"
 
-# INSTALL WMIC.EXE (Deprecated by Microsoft; we use this in RMM tasks): 
-Add-WindowsCapability -Online -Name WMIC~~~~ -ErrorAction Stop
-
 # INSTALL *STANDARD* APPLICATIONS USING 'WinGet'
 	Log-Message "Running 'WinGet' to install standard software applications."
 winget.exe install Microsoft.Powershell --scope machine --silent --accept-source-agreements
@@ -86,8 +86,6 @@ winget.exe install Dell.CommandUpdate --scope machine --silent --accept-source-a
 winget.exe upgrade --all
 Log-Message "All Winget-based software are up to date."
 
-
-
 # INSTALL OFFICE 365
 	# Note: needs the additional parameters to prevent GUI popup. 
 	$sources = "C:\Sources"
@@ -97,19 +95,11 @@ Log-Message "All Winget-based software are up to date."
 Start-Process -FilePath $Office365InstallPath -ArgumentList $arguments -Wait
 
 
-
-
-### SETS AUTO LOGIN AS ".\ITNGAdmin" ON NEXT LOGIN
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
-Set-ItemProperty -Path $RegPath -Name "DefaultDomainName" -Value ""
-Set-ItemProperty -Path $RegPath -Name "DefaultUsername" -Value ".\ITNGAdmin"
-Set-ItemProperty -Path $RegPath -Name "DefaultPassword" -Value "password"
-Set-ItemProperty -Path $RegPath -Name "AutoAdminLogon" -Value "1"Set-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
-
 ### RUN NEW_SETUP_PART_3.PS1 ON NEXT LOGON
+New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "RunOnce"
 $ScriptPath = "C:\Sources\new_setup_part_3.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
-$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`""
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
 Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
 
 

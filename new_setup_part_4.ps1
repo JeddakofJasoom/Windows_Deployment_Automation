@@ -19,21 +19,20 @@ if ($displayMessage) {
 	# START LOGGING:
 Log-Message "New Setup Part 4 Script has started here."
 
-### *REMOVES* AUTO LOGIN AS ".\ITNGAdmin" ON NEXT LOGIN
+### *REMOVES* AUTO LOGIN AS ".\ITNGAdmin"
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
 Remove-ItemProperty -Path $RegPath -Name "DefaultDomainName" -Value ""
 Remove-ItemProperty -Path $RegPath -Name "DefaultUsername" -Value ".\ITNGAdmin"
 Remove-ItemProperty -Path $RegPath -Name "DefaultPassword" -Value "password"
 Remove-ItemProperty -Path $RegPath -Name "AutoAdminLogon" -Value "1"
 Remove-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
+Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization"
 Log-Message "Removed all registry keys to disable auto logon."
 
-### REMOVE NEW_SETUP_PART_3.PS1 ON NEXT LOGON
-$ScriptPath = "C:\Sources\new_setup_part_3.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
-$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`""
-Remove-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
-Log-Message "Removed all registry keys to run powershell scripts on logon." 
+### REMOVE NEW_SETUP_PART_4.PS1 
+$RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+Remove-Item -Path $RegPath
+	Log-Message "Removed all registry keys to run powershell scripts on logon." 
 
 
 
@@ -84,10 +83,9 @@ Log-Message "All commands have been run and system is set to standard configurat
 $sourceFile = "C:\Sources\New_Setup_LOG.txt" 
 $destinationFolder = "C:\Users\ITNGAdmin\Desktop\"
 Copy-Item -Path $sourceFile -Destination $destinationFolder -Force
-Log-Message "Copied all content from $sourceFolder folder to $destinationFolder" 
-
+	Log-Message "Copied all content from $sourceFolder folder to $destinationFolder" 
 Remove-Item -Path "C:\Sources" -Recurse -Force
-
+	Log-Message "Removed C:\Sources folder from this system as final cleanup task."
 
 # Force open setup log in notepad to check completion: 
 Start-Process notepad.exe "C:\Users\ITNGAdmin\Desktop\New_Setup_LOG.txt"
