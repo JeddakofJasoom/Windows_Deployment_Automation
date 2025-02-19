@@ -156,7 +156,7 @@
 		<SynchronousCommand wcm:action="add">
 			<Order>1</Order>
 			<Description>Run New Setup Part 1 Script</Description>
-			<CommandLine>powershell.exe -NoExit -ExecutionPolicy Bypass -File "D:\Scripts\new_setup_part_1.ps1"</CommandLine>
+			<CommandLine>powershell.exe -NoExit -ExecutionPolicy Bypass -File "D:\Scripts\new_setup_part_1.ps1" -Verb RunAs</CommandLine>
 		</SynchronousCommand>
 	</FirstLogonCommands>
 	</component>
