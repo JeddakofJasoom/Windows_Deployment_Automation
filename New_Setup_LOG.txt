@@ -1,0 +1,43 @@
+2025-02-20 07:56:28 - New Setup Part 1 Script has started.
+2025-02-20 07:56:31 - Copied all content from D:\Scripts folder to C:\Sources
+2025-02-20 07:56:33 - Installing latest version of 'NuGet' package from Microsoft
+2025-02-20 07:56:43 - Installed Powershell Module 'PSWindowsUpdate' to enable Windows Updates through Powershell
+2025-02-20 07:56:43 - Restarting Windows Update Service.
+2025-02-20 07:56:43 - Running: Windows Updates Installation
+2025-02-20 08:23:38 - Installed additional Windows updates: System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject System.__ComObject
+2025-02-20 08:23:38 - End of Part 1 setup script.
+2025-02-20 08:32:24 - 
+New Setup Part 2 Script has started here.
+2025-02-20 08:32:29 - Disabled IPv6 on network adapter: Ethernet.
+2025-02-20 08:32:29 - Set network profile for itng.local (Ethernet) to Private.
+2025-02-20 08:32:32 - Enabled ALL Firewalls
+2025-02-20 08:32:33 - Created new firewall rule to allow Port 3389 (RDP) on Private and Domain profiles in Windows Firewall.
+2025-02-20 08:32:33 - Enabled RDP connections with network level authentication required
+2025-02-20 08:32:33 - Boot menu timeout successfully set to 5 seconds.
+2025-02-20 08:32:33 - AutoReboot after system failure has been successfully enabled.
+2025-02-20 08:32:33 - Debugging information type has been set to None.
+2025-02-20 11:32:33 - Time zone has been set to Eastern Standard Time
+2025-02-20 11:32:38 - Synced system clock to Eastern Standard Time
+2025-02-20 11:32:51 - AV signature definitions updated.
+2025-02-20 11:32:51 - Installing WMIC.exe - this will take several minutes.
+2025-02-20 11:37:29 - Running 'WinGet' to install standard software applications.
+2025-02-20 11:42:08 - All Winget-based software are up to date.
+2025-02-20 11:44:53 - Installed additional Windows updates: 
+2025-02-20 11:44:57 - End of Part 2 setup script.
+2025-02-20 11:45:56 - 
+New Setup Part 3 Script has started here.
+2025-02-20 11:54:56 - Dell Command updates installed:  Checking for updates... Checking for application component updates... Determining available updates... 5 updates were selected. Download Size: 1.3 GB [1] 4VJ35, Intel Management Engine Components Installer, 2435.6.36.0 [2] DF8CW, Dell Security Advisory Update - DSA-2021-088, 2.1.0 [3] P5G2N, Dell SupportAssist OS Recovery Plugin for Dell Update, 5.5.13.1 [4] PPR2C, Intel I2xx and 825xx PCIe Ethernet Controller Driver, 25.0.1.0 [5] 6THXP, Intel UHD Graphics Driver, 31.0.101.2130 Scanning system devices... Downloading updates (0 of 0), 0 bytes of 1.3 GB transferred (0.00%)...  Downloading updates (1 of 5), 78.0 MB of 1.3 GB transferred (5.87%)...  Downloading updates (1 of 5), 157.0 MB of 1.3 GB transferred (11.82%)...  Downloading updates (1 of 5), 232.0 MB of 1.3 GB transferred (17.46%)...  Downloading updates (1 of 5), 307.2 MB of 1.3 GB transferred (23.12%)...  Downloading updates (1 of 5), 384.2 MB of 1.3 GB transferred (28.92%)...  Downloading updates (1 of 5), 454.3 MB of 1.3 GB transferred (34.18%)...  Downloading updates (1 of 5), 523.8 MB of 1.3 GB transferred (39.42%)...  Downloading updates (1 of 5), 581.6 MB of 1.3 GB transferred (43.77%)...  Downloading updates (2 of 5), 591.5 MB of 1.3 GB transferred (44.52%)...  Downloading updates (3 of 5), 618.5 MB of 1.3 GB transferred (46.54%)...  Downloading updates (4 of 5), 641.4 MB of 1.3 GB transferred (48.27%)...  Downloading updates (5 of 5), 721.6 MB of 1.3 GB transferred (54.31%)...  Downloading updates (5 of 5), 797.4 MB of 1.3 GB transferred (60.01%)...  Downloading updates (5 of 5), 863.9 MB of 1.3 GB transferred (65.01%)...  Downloading updates (5 of 5), 941.4 MB of 1.3 GB transferred (70.84%)...  Downloading updates (5 of 5), 1.0 GB of 1.3 GB transferred (76.13%)...  Downloading updates (5 of 5), 1.1 GB of 1.3 GB transferred (81.79%)...  Downloading updates (5 of 5), 1.1 GB of 1.3 GB transferred (87.08%)...  Downloading updates (5 of 5), 1.2 GB of 1.3 GB transferred (90.62%)...  Downloading updates (5 of 5), 1.2 GB of 1.3 GB transferred (96.06%)...  Downloading updates (5 of 5), 1.3 GB of 1.3 GB transferred (100.00%)...  Creating system restore point... Downloaded updates (5 of 5)., 1.3 GB of 1.3 GB transferred (100.00%)...  Installing updates (1 of 5). Update Name: Dell Security Advisory Update - DSA-2021-088  Installing updates (2 of 5). Update Name: Dell SupportAssist OS Recovery Plugin for Dell Update  Installing updates (3 of 5). Update Name: Intel Management Engine Components Installer  Installing updates (4 of 5). Update Name: Intel UHD Graphics Driver  Installing updates (5 of 5). Update Name: Intel I2xx and 825xx PCIe Ethernet Controller Driver  Finished installing the updates. 4 of 5 update(s) successfully installed. The system has been updated. Installation for these updates were interrupted, will get installed after UserActivity Completes. [1] PPR2C, Intel I2xx and 825xx PCIe Ethernet Controller Driver, 25.0.1.0 Execution completed. The program exited with return code: 0
+2025-02-20 11:54:56 - End of Part 3 setup script.
+2025-02-20 11:55:56 - 
+New Setup Part 4 Script has started here.
+2025-02-20 11:55:56 - Removed all registry keys to disable auto logon.
+2025-02-20 11:55:56 - Removed all registry keys to run powershell scripts on logon.
+2025-02-20 11:57:04 - Dell Command updates installed:  Checking for updates... Determining available updates... 1 updates were selected. Download Size: 22.9 MB [1] PPR2C, Intel I2xx and 825xx PCIe Ethernet Controller Driver, 25.0.1.0 Scanning system devices... Downloading updates (0 of 0), 0 bytes of 22.9 MB transferred (0.00%)...  Downloaded updates (1 of 1)., 22.9 MB of 22.9 MB transferred (100.00%)...  Creating system restore point... Downloaded updates (1 of 1)., 22.9 MB of 22.9 MB transferred (100.00%)...  Installing updates (1 of 1). Update Name: Intel I2xx and 825xx PCIe Ethernet Controller Driver  Finished installing the updates. 1 of 1 update(s) successfully installed. The system has been updated. Execution completed. The program exited with return code: 0
+2025-02-20 12:25:06 - Changed ITNGAdmin password from its default.
+2025-02-20 12:25:08 - Computer name will remain as: 'DESKTOP-2DL9JTM'
+2025-02-20 12:25:08 - End of Part 4 setup script.
+2025-02-20 12:25:08 - 
+Copied all content from  folder to 
+2025-02-20 12:25:09 - Removed C:\Sources folder from this system as final cleanup task.
+2025-02-20 12:25:09 - 
+All commands have been run and system is set to standard configuration. Please check the C:\Sources\New_Setup_LOG.txt for complete setup log information.

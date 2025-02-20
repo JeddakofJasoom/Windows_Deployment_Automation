@@ -1,7 +1,9 @@
 <#
-
 TODO: add rmm installer as subfolder in c:\sources?
- 
+TODO: do a check to be sure the reg keys have been removed to autounlock / auto login - last time it didn't get removed. 
+
+TODO: PRINT OUT OVERFLOW LIST AND CHECK WITH DAVID
+TODO: bitlocker enable prompt option...?
 #>
 
 # CREATE CUSTOM FUNCTION TO LOG OUTPUT MESSAGES IN THIS SCRIPT:
@@ -17,37 +19,35 @@ if ($displayMessage) {
    Write-Host "$logEntry" -ForegroundColor Yellow
 }  Add-Content -Path $logFile -Value $logEntry }
 	# START LOGGING:
+Log-Message "`n"
 Log-Message "New Setup Part 4 Script has started here."
 
 ### *REMOVES* AUTO LOGIN AS ".\ITNGAdmin"
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
-Remove-ItemProperty -Path $RegPath -Name "DefaultDomainName" -Value ""
-Remove-ItemProperty -Path $RegPath -Name "DefaultUsername" -Value ".\ITNGAdmin"
-Remove-ItemProperty -Path $RegPath -Name "DefaultPassword" -Value "password"
-Remove-ItemProperty -Path $RegPath -Name "AutoAdminLogon" -Value "1"
-Remove-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
+Remove-ItemProperty -Path $RegPath -Name "DefaultDomainName"
+Remove-ItemProperty -Path $RegPath -Name "DefaultUsername"
+Remove-ItemProperty -Path $RegPath -Name "DefaultPassword"
+Remove-ItemProperty -Path $RegPath -Name "AutoAdminLogon"
+Remove-ItemProperty -Path $RegPath -Name "ForceAutoLogon"
+	# Removes auto screen unlock
 Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization"
-Log-Message "Removed all registry keys to disable auto logon."
+	Log-Message "Removed all registry keys to disable auto logon."
 
-### REMOVE NEW_SETUP_PART_4.PS1 
-$RegPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
-Remove-Item -Path $RegPath
+### REMOVE CURRENT REG KEY for NEW_SETUP_PART_4.PS1
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+Remove-Item -Path $RegPath 
 	Log-Message "Removed all registry keys to run powershell scripts on logon." 
 
-
-
-
-# RUN DELL COMMAND UPDATE
+# RUN DELL COMMAND UPDATE (2nd pass)
 cd "c:\program files (x86)\Dell\CommandUpdate\"
 & ".\dcu-cli.exe" /scan 
-$applyResult = & ".\dcu-cli.exe" /ApplyUpdates -reboot=Disable 2>&1
-	Log-Message "Dell Command updates installed: $applyResult" 
+& ".\dcu-cli.exe" /ApplyUpdates -reboot=Disable
+	Log-Message "Dell Command updates installed." 
 
 # SYSTEM CLEANUP
 dism /online /cleanup-image /restorehealth
 dism /online /cleanup-image /startcomponentcleanup
 sfc /scannow
-
 
 # FORCE CHANGE ITNGADMIN PASSWORD FROM DEFAULT:
 Write-Host "The current password for the local account ITNGAdmin is set to the default of 'password' and MUST be changed." -ForegroundColor Red
@@ -56,7 +56,7 @@ $desiredPassword = Read-Host
 $newPassword = ConvertTo-SecureString $desiredPassword -AsPlainText -Force
 Set-LocalUser -Name "ITNGAdmin" -Password $newPassword 
 Write-Host "Password for ITNGAdmin has been changed to: '$desiredPassword'" -ForegroundColor Green
-Log-Message "Changed ITNGAdmin password from its default." 
+Log-Message "Changed ITNGAdmin password from its default to: $desiredPassword" 
 
 # CHANGE COMPUTER NAME WITH MANUAL INPUT:
 $currentName = $env:COMPUTERNAME
@@ -76,17 +76,17 @@ Rename-Computer -NewName $newName -Force
 
 # End logging to setup log file.
 Log-Message "End of Part 4 setup script."
-Log-Message "All commands have been run and system is set to standard configuration. Please check the C:\Sources\New_Setup_LOG.txt for complete setup log information."
 
 
 #COPY SETUP LOG TO ITNGADMIN DESKTOP FOR REVIEW. 
+	Log-Message "`nCopied all content from $sourceFolder folder to $destinationFolder" 
+	Log-Message "Removed C:\Sources folder from this system as final cleanup task."
+	Log-Message "`nAll commands have been run and system is set to standard configuration. Please check the C:\Sources\New_Setup_LOG.txt for complete setup log information."
 $sourceFile = "C:\Sources\New_Setup_LOG.txt" 
 $destinationFolder = "C:\Users\ITNGAdmin\Desktop\"
 Copy-Item -Path $sourceFile -Destination $destinationFolder -Force
-	Log-Message "Copied all content from $sourceFolder folder to $destinationFolder" 
 Remove-Item -Path "C:\Sources" -Recurse -Force
-	Log-Message "Removed C:\Sources folder from this system as final cleanup task."
-
+	
 # Force open setup log in notepad to check completion: 
 Start-Process notepad.exe "C:\Users\ITNGAdmin\Desktop\New_Setup_LOG.txt"
 

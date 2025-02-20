@@ -1,23 +1,12 @@
-answer file 
-auto login as admin
+answer file #updated the autologon 
+auto login as admin # did not auto login had to manually sign in, but script 1 auto ran. 
 script 1 - 
-	stop winupdate 
+	stop winupdate #Deleted the "-Force" switch as it threw an error 
 	copy d:\Scripts folder to C:\sources
 	create log file
-	disable ipv6 on net adapters
-	set network to private on adapters
-	enable windows firewall
-	add port 3389 RDP allow fw rule
-	enable RDP with NLA
 	set power config (can't get laptops to work yet have to do manual laptops)
-	set boot menu to 5 second startup delay
-	auto reboot after system fail
-	set numlock always on
-	set debug info to none
-	set time zone to EST
-	Install Nuget from Msoft
-	install ps module to run winupdate
-	update win defender
+	Install Nuget from Msoft (.NET requirement)
+	install ps module to run winupdate through PS
 	restart winupdate service
 	run windows updates
 	add reg key change to auto login as itngadmin
@@ -26,17 +15,32 @@ script 1 -
 	force reboot
 auto login as admin
 script 2 - 
-	check to confirm network changes, append to log file
-	run windows updates again 
+update win defender
+	delete reg key to run script 2 on next login 
+	set power config (2nd pass) 
+	disable ipv6 on net adapters
+	set network to private on adapters
+	enable windows firewall
+	add port 3389 RDP allow fw rule
+	enable RDP with NLA
+	set boot menu to 5 second startup delay (for easier BIOS access for us)
+	auto reboot after system fail
+	set debug info to none
+	set time zone to EST
+	update AV signature
 	install WMIC.exe 
-	run winget to install: Powershell7, Chrome, Adobe, Dell command
+	run windows updates again 
+	winget Install Powershell 7 
+	run winget to install: Chrome, Dell Command, Adobe Reader
 	update apps through winget
 	install office 365
+	run windows updates (2nd pass)
 	add reg key to run script 3 on next login
-	wiat 5 seconds
+	wait 5 seconds
 	force reboot
 auto login as admin
 script 3 -
+	delete reg key to run script 3 on next login 
 	user profile settings changes:
 		disable widgets
 		disable taskview
@@ -46,19 +50,23 @@ script 3 -
 		remove outlook (new) 
 		set numlock always on
 		disable windows search web results
-	run dell command again
-	add reg key to auto login as itngadmin
-	add reg key to auto run part 4
+	run dell command (1st pass)
+	add reg key to auto run script 4
 	wait 5 seconds 
 	reboot
 auto login as admin
 script 4 -
-	remove reg key to autologin as itngadmin
-	remove reg key to run script 3 on next login
-	run dell command
+	remove ALL reg keys to autologin as itngadmin
+	remove reg key to run script 4 on next login
+	run dell command (2nd pass)
 	run dism and sfc
 	prompt manual input to force itngadmin default password change
+		note: current default password is set to "password" 
 	prompt (optional) manual input for computer name change
-	copies the log file to itngadmin\desktop
+	copies the setup log file to itngadmin\desktop
 	removes the c:\sources folder 
-	opens the log file in notepad for final review. 
+	opens the setup log file in notepad for final review. 
+
+
+? enable bitlocker on laptops - Datto RMM component...???
+? laptops still require manual power config change to prevent sleep... (working on this)

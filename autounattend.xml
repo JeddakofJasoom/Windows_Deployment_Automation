@@ -146,7 +146,7 @@
         <AutoLogon>
             <Username>ITNGAdmin</Username>
             <Enabled>true</Enabled>
-            <LogonCount>1</LogonCount>
+            <LogonCount>3</LogonCount>
             <Password>
                 <Value>password</Value>
                 <PlainText>true</PlainText>
