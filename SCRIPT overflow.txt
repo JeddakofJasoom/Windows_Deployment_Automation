@@ -27,7 +27,6 @@ update win defender
 	auto reboot after system fail
 	set debug info to none
 	set time zone to EST
-	update AV signature
 	install WMIC.exe 
 	run windows updates again 
 	winget Install Powershell 7 
@@ -50,6 +49,8 @@ script 3 -
 		remove outlook (new) 
 		set numlock always on
 		disable windows search web results
+		import default apps.xml (Chrome, Adobe, Outlook)
+	update AV signature #moved from part 2 to 3 as got: # error "the remote procedure call failed."
 	run dell command (1st pass)
 	add reg key to auto run script 4
 	wait 5 seconds 

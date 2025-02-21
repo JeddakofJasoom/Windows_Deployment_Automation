@@ -79,15 +79,19 @@ Log-Message "End of Part 4 setup script."
 
 
 #COPY SETUP LOG TO ITNGADMIN DESKTOP FOR REVIEW. 
-	Log-Message "`nCopied all content from $sourceFolder folder to $destinationFolder" 
-	Log-Message "Removed C:\Sources folder from this system as final cleanup task."
-	Log-Message "`nAll commands have been run and system is set to standard configuration. Please check the C:\Sources\New_Setup_LOG.txt for complete setup log information."
 $sourceFile = "C:\Sources\New_Setup_LOG.txt" 
 $destinationFolder = "C:\Users\ITNGAdmin\Desktop\"
+    Log-Message "~~~~~~"
+    Log-Message "Copied all content from $sourceFile folder to $destinationFolder" 
+	Log-Message "Removed C:\Sources folder from this system as final cleanup task."
+    Log-Message "~~~~~~"
+    Log-Message "All commands have been run and system is set to standard configuration. Please check the C:\Sources\New_Setup_LOG.txt for complete setup log information."
 Copy-Item -Path $sourceFile -Destination $destinationFolder -Force
 Remove-Item -Path "C:\Sources" -Recurse -Force
 	
 # Force open setup log in notepad to check completion: 
+Write-Host "Opening New Setup Log File now, please check settings changes!" -ForegroundColor Red
+Start-Sleep -Seconds 3
 Start-Process notepad.exe "C:\Users\ITNGAdmin\Desktop\New_Setup_LOG.txt"
 
 
