@@ -110,20 +110,6 @@
 <settings pass="generalize">
 	</settings>
 <settings pass="specialize">
-  <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
-   <RunSynchronous>
-	<SynchronousCommand wcm:action="add">
-		<Order>1</Order>
-		<Description>Create Personalization Registry Key</Description>
-		<CommandLine>REG ADD HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization /f</CommandLine>
-	 </SynchronousCommand>
-	 <SynchronousCommand wcm:action="add">
-		<Order>2</Order>
-		<Description>Disable Lock Screen</Description>
-		<CommandLine>REG ADD HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization /v NoLockScreen /t REG_DWORD /d 1 /f</CommandLine>
-	 </SynchronousCommand>
-	</RunSynchronous>
-    </component>
 	</settings>
 <settings pass="auditSystem">
 	</settings>
@@ -158,17 +144,28 @@
             </LocalAccounts>
         </UserAccounts>
         <AutoLogon>
-            <Username>ITNGAdmin</Username>
-            <Enabled>true</Enabled>
-            <LogonCount>1</LogonCount>
             <Password>
                 <Value>password</Value>
-                <PlainText>true</PlainText>
             </Password>
+			<Domain></Domain>
+            <Enabled>true</Enabled>
+            <LogonCount>2</LogonCount>
+			<Username>ITNGAdmin</Username>
         </AutoLogon>
 <FirstLogonCommands>
 	<SynchronousCommand wcm:action="add">
 		<Order>1</Order>
+		<Description>Auto unlock on first autologon
+		</Description>
+		<CommandLine>REG ADD HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization</CommandLine>
+	</SynchronousCommand>
+	<SynchronousCommand wcm:action="add">
+		<Order>2</Order>
+		<Description>Auto unlock on first autologon</Description>
+		<CommandLine>REG ADD HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization /v NoLockScreen /t REG_DWORD /d 1 /f</CommandLine>
+	</SynchronousCommand>
+	<SynchronousCommand wcm:action="add">
+		<Order>3</Order>
 		<Description>Run New Setup Part 1 Script</Description>
 		<CommandLine>powershell.exe -NoExit -ExecutionPolicy Bypass -File "D:\Scripts\new_setup_part_1.ps1" -Verb RunAs</CommandLine>
 	</SynchronousCommand>
