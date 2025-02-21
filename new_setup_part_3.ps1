@@ -17,12 +17,22 @@ if ($displayMessage) {
    Write-Host "$logEntry" -ForegroundColor Yellow
 }  Add-Content -Path $logFile -Value $logEntry }
 	# START LOGGING:
-Log-Message "`n"
+Log-Message "~~~~~"
 Log-Message "New Setup Part 3 Script has started here."
 
 ### REMOVE CURRENT REG KEY for NEW_SETUP_PART_3.PS1
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
 Remove-Item -Path $RegPath  
+	Log-Message "Removed registry key to run part 3 script."
+Start-Sleep -Seconds 1
+
+### RUN NEW_SETUP_PART_4.PS1 ON NEXT LOGON
+New-Item -path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "RunOnce" -Force
+$ScriptPath = "C:\Sources\new_setup_part_4.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
+Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
+
 
 ###user profile settings change: 
 
@@ -45,12 +55,6 @@ Set-ItemProperty -Path "Registry::HKEY_USERS\.DEFAULT\Control Panel\Keyboard" -N
 New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "Explorer" 
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "DisableSearchBoxSuggestions" -PropertyType DWORD -Value 1 -Force
 
-	<# SET DEFAULT APPS: 
-	.pdf = Adobe 
-	.html = Chrome
-	mailto = Outlook #>
-dism /online /Import-DefaultAppAssociations:"C:\Sources\DefaultApps.xml"
-
 # UPDATE WINDOWS DEFENDER WITH POWERSHELL
 Update-MpSignature
 Log-Message "AV signature definitions updated." 
@@ -62,13 +66,6 @@ Log-Message "Installing available Dell updates..."
 & ".\dcu-cli.exe" /ApplyUpdates -reboot=Disable
 	Log-Message "Dell Command updates installed." 
 	
-### RUN NEW_SETUP_PART_4.PS1 ON NEXT LOGON
-New-Item -path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "RunOnce" -Force
-$ScriptPath = "C:\Sources\new_setup_part_4.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
-$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
-Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
-
 # REBOOT PC 
 Write-Host "Dell Command Updates are installed and require reboot. Rebooting PC in 5 seconds..." -ForegroundColor Red
 Log-Message "End of Part 3 setup script."

@@ -20,11 +20,21 @@ if ($displayMessage) {
    Write-Host "$logEntry" -ForegroundColor Yellow
 }  Add-Content -Path $logFile -Value $logEntry }
 	# START LOGGING:
-Log-Message "`nNew Setup Part 2 Script has started here."
+Log-Message "~~~~~"
+Log-Message "New Setup Part 2 Script has started here."
 
 ### REMOVE NEW_SETUP_PART_2.PS1 reg key 
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
 Remove-Item -Path $RegPath 
+	Log-Message "Removed registry key to run part 2 script."
+Start-Sleep -Seconds 1
+	
+### RUN NEW_SETUP_PART_3.PS1 ON NEXT LOGON
+New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "RunOnce"
+$ScriptPath = "C:\Sources\new_setup_part_3.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
+Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
 
 #SET ACTIVE POWER PLAN:
 powercfg.exe /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
@@ -123,12 +133,7 @@ Start-Process -FilePath $Office365InstallPath -ArgumentList $arguments -Wait
 $winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction Continue 2>&1 | Out-String
 	Log-Message "Installed additional Windows updates: `n$winupdateResult"
 
-### RUN NEW_SETUP_PART_3.PS1 ON NEXT LOGON
-New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "RunOnce"
-$ScriptPath = "C:\Sources\new_setup_part_3.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
-$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
-Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
+
 
 # REBOOT PC 
 Write-Host "Windows Updates 2nd pass installed along with standard system settings changed. Rebooting PC in 5 seconds..." -ForegroundColor Red

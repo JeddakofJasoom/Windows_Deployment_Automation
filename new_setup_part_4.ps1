@@ -19,7 +19,7 @@ if ($displayMessage) {
    Write-Host "$logEntry" -ForegroundColor Yellow
 }  Add-Content -Path $logFile -Value $logEntry }
 	# START LOGGING:
-Log-Message "`n"
+Log-Message "~~~~~"
 Log-Message "New Setup Part 4 Script has started here."
 
 ### *REMOVES* AUTO LOGIN AS ".\ITNGAdmin"
@@ -32,6 +32,7 @@ Remove-ItemProperty -Path $RegPath -Name "ForceAutoLogon"
 	# Removes auto screen unlock
 Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization"
 	Log-Message "Removed all registry keys to disable auto logon."
+Start-Sleep -Seconds 1
 
 ### REMOVE CURRENT REG KEY for NEW_SETUP_PART_4.PS1
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
@@ -49,6 +50,22 @@ dism /online /cleanup-image /restorehealth
 dism /online /cleanup-image /startcomponentcleanup
 sfc /scannow
 
+### *REMOVES* AUTO LOGIN AS ".\ITNGAdmin"
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
+Remove-ItemProperty -Path $RegPath -Name "DefaultDomainName"
+Remove-ItemProperty -Path $RegPath -Name "DefaultUsername"
+Remove-ItemProperty -Path $RegPath -Name "DefaultPassword"
+Remove-ItemProperty -Path $RegPath -Name "AutoAdminLogon"
+Remove-ItemProperty -Path $RegPath -Name "ForceAutoLogon"
+	# Removes auto screen unlock
+Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization"
+	Log-Message "Ran second pass to ensure removal of all registry keys to disable auto logon - ignore any errors on screen."
+
+### REMOVE CURRENT REG KEY for NEW_SETUP_PART_4.PS1
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+Remove-Item -Path $RegPath 
+	Log-Message "Ran second pass to ensure removal of all registry keys to run powershell scripts on logon - ignore any errors on screen." 
+	
 # FORCE CHANGE ITNGADMIN PASSWORD FROM DEFAULT:
 Write-Host "The current password for the local account ITNGAdmin is set to the default of 'password' and MUST be changed." -ForegroundColor Red
 Write-Host "Please enter the password you want to change it to here:" -Foregroundcolor Yellow
@@ -76,7 +93,6 @@ Rename-Computer -NewName $newName -Force
 
 # End logging to setup log file.
 Log-Message "End of Part 4 setup script."
-
 
 #COPY SETUP LOG TO ITNGADMIN DESKTOP FOR REVIEW. 
 $sourceFile = "C:\Sources\New_Setup_LOG.txt" 
