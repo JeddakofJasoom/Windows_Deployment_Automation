@@ -54,6 +54,13 @@ Set-ItemProperty -Path "Registry::HKEY_USERS\.DEFAULT\Control Panel\Keyboard" -N
 	# DISABLE 'WEB SEARCH RESULTS' IN WINDOWS SEARCH 
 New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "Explorer" 
 New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" -Name "DisableSearchBoxSuggestions" -PropertyType DWORD -Value 1 -Force
+	# SET DEFAULT APPS:
+	<#  .html = Chrome
+		.pdf = Adobe
+		mailto = OUTLOOK
+		.eml = OUTLOOK
+	#>
+dism /online /Import-DefaultAppAssociations:C:\Sources\DefaultAppAssociations.xml
 
 # UPDATE WINDOWS DEFENDER WITH POWERSHELL
 Update-MpSignature
