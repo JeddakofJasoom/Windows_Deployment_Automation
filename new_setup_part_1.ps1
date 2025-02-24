@@ -93,7 +93,7 @@ Install-Module PSWindowsUpdate -Force
 Log-Message "Installed Powershell Module 'PSWindowsUpdate' to enable Windows Updates through Powershell"
 
 # RESTART WINDOWS UPDATE 
-Set-Service -Name wuauserv -StartupType Automatic -Status running
+Set-Service -Name wuauserv -StartupType Automatic -Status running -ErrorAction Continue
 Log-Message "Restarting Windows Update Service."
 
 # INSTALL WINDOWS UPDATES!!!

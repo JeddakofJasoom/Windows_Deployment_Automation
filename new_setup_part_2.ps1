@@ -133,8 +133,6 @@ Start-Process -FilePath $Office365InstallPath -ArgumentList $arguments -Wait
 $winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction Continue 2>&1 | Out-String
 	Log-Message "Installed additional Windows updates: `n$winupdateResult"
 
-
-
 # REBOOT PC 
 Write-Host "Windows Updates 2nd pass installed along with standard system settings changed. Rebooting PC in 5 seconds..." -ForegroundColor Red
 Log-Message "End of Part 2 setup script."
