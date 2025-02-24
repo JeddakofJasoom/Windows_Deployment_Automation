@@ -41,6 +41,7 @@ if ($displayMessage) {
 	# Start Logging:
 	Log-Message "New Setup Part 1 Script has started."	
 
+<# TESTING to see if we still need this section as the <autologon> in the autounattend.XML appears to do this automatically. 
 ### SETS AUTO LOGIN AS ".\ITNGAdmin" ON NEXT LOGIN
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
 Set-ItemProperty -Path $RegPath -Name "DefaultDomainName" -Value ""
@@ -48,9 +49,10 @@ Set-ItemProperty -Path $RegPath -Name "DefaultUsername" -Value ".\ITNGAdmin"
 Set-ItemProperty -Path $RegPath -Name "DefaultPassword" -Value "password"
 Set-ItemProperty -Path $RegPath -Name "AutoAdminLogon" -Value "1"
 Set-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
+#> 
 	# prevents screen from locking on auto login to monitor running script processes:
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Personalization" -Force
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -Value "1"
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -Value "1" -ErrorAction Continue
 	Log-Message "Set registry keys to force auto login with ITNGAdmin account on next logon."
 Start-Sleep -Seconds 1
 
@@ -64,8 +66,12 @@ Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
 Start-Sleep -Seconds 1
 
 #COPY ALL CONTENTS OF D:\SCRIPTS TO C:\SOURCES :
+try {
 Copy-Item -Path "$sourceFolder\*" -Destination $destinationFolder -Recurse -Force -ErrorAction Stop
-	Log-Message "Copied all content from $sourceFolder folder to $destinationFolder" 
+	Log-Message "Copied all content from $sourceFolder folder to $destinationFolder"
+} catch {
+	Log-Message "WARNING: Failed to copy installation scripts from $sourceFolder to $destinationFolder! The scripts will NOT continue to run without this folder being present! YOU MUST REVIEW!" 
+}
 
 # SET THE POWER SCHEME TO HIGH PERFORMANCE (PREDEFINED GUID)
 powercfg.exe /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
@@ -95,6 +101,7 @@ Log-Message "Restarting Windows Update Service."
 $winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction Continue 2>&1
 	Log-Message "Installed additional Windows updates: $winupdateResult"
 
+<# TESTING to see if we still need this section as the <autologon> in the autounattend.XML appears to do this automatically. 
 ### SETS AUTO LOGIN AS ".\ITNGAdmin" ON NEXT LOGIN
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
 Set-ItemProperty -Path $RegPath -Name "DefaultDomainName" -Value ""
@@ -106,12 +113,13 @@ Set-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Personalization" -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -Value "1"
 	Log-Message "Ran second pass to set registry keys to force auto login with ITNGAdmin account on next logon - ignore any errors on screen."
+#>
 
-### RUN NEW_SETUP_PART_2.PS1 ON NEXT LOGON
-New-Item -path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "RunOnce" -Force
+### RUN NEW_SETUP_PART_2.PS1 ON NEXT LOGON (2nd pass to ensure it runs) 
+New-Item -path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "RunOnce" -Force -ErrorAction SilentlyContinue
 $ScriptPath = "C:\Sources\new_setup_part_2.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
-$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
+$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs -ErrorAction SilentlyContinue"
 Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
 	Log-Message "Ran second pass to set registry key to run setup part 2 on next logon - ignore any errors on screen." 
 

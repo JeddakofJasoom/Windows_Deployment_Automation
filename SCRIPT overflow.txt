@@ -1,22 +1,27 @@
-answer file #updated the autologon 
-auto login as admin # did not auto login had to manually sign in, but script 1 auto ran. 
+answer file #updated the autologon to count 5
+auto login as admin (from <autologon>) 
 script 1 - 
 	stop winupdate #Deleted the "-Force" switch as it threw an error 
+
+	create C:\Sources folder
+	create C:\sources\new_setup_log.txt log file
+	create logging function
+	#commented out for next test: add reg key change to auto login as itngadmin
+	add reg key to run script 2 on next login #added -erroraction silentlycontinue
 	copy d:\Scripts folder to C:\sources
-	create log file
 	set power config (can't get laptops to work yet have to do manual laptops)
 	Install Nuget from Msoft (.NET requirement)
 	install ps module to run winupdate through PS
 	restart winupdate service
-	run windows updates
-	add reg key change to auto login as itngadmin
-	add reg key to run script 2 on next login 
+	Run and install windows updates
+	2nd pass to add reg key to run script 2 # added -erroraction silentlycontinue
 	wait 5 seconds
 	force reboot
-auto login as admin
-script 2 - 
-update win defender
-	delete reg key to run script 2 on next login 
+auto login as admin (from <autologon>) 
+script 2 -
+	create logging function
+	!delete reg key to run script 2 on next login 
+	!add reg key to run script 3 on next login
 	set power config (2nd pass) 
 	disable ipv6 on net adapters
 	set network to private on adapters
@@ -27,35 +32,34 @@ update win defender
 	auto reboot after system fail
 	set debug info to none
 	set time zone to EST
+	Resync time clock (force update)
 	install WMIC.exe 
-	run windows updates again 
-	winget Install Powershell 7 
-	run winget to install: Chrome, Dell Command, Adobe Reader
+	run winget to install: Powershell 7, Chrome, Dell Command, Adobe Reader
 	update apps through winget
 	install office 365
-	run windows updates (2nd pass)
-	add reg key to run script 3 on next login
+	Run and install windows updates (2nd pass)
 	wait 5 seconds
 	force reboot
-auto login as admin
+auto login as admin (from <autologon>) 
 script 3 -
-	delete reg key to run script 3 on next login 
+	create logging function
+	! delete reg key to run script 3 on next login 
+	! add reg key to auto run script 4
 	user profile settings changes:
 		disable widgets
-		disable taskview
+		# disable taskview #HK current user only...
 		disable windows search random icon
-		taskbar align to left
+		# taskbar align to left #HK current user only...
 		remove copilot
 		remove outlook (new) 
 		set numlock always on
-		disable windows search web results
+		# disable windows search web results #HK current user only...
 		import default apps.xml (Chrome, Adobe, Outlook)
 	update AV signature #moved from part 2 to 3 as got: # error "the remote procedure call failed."
 	run dell command (1st pass)
-	add reg key to auto run script 4
 	wait 5 seconds 
 	reboot
-auto login as admin
+auto login as admin (from <autologon>) 
 script 4 -
 	remove ALL reg keys to autologin as itngadmin
 	remove reg key to run script 4 on next login

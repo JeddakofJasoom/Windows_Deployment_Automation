@@ -22,6 +22,12 @@ if ($displayMessage) {
 Log-Message "~~~~~"
 Log-Message "New Setup Part 4 Script has started here."
 
+### REMOVE CURRENT REG KEY for NEW_SETUP_PART_4.PS1
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+Remove-Item -Path $RegPath 
+	Log-Message "Removed all registry keys to run powershell scripts on logon." 
+
+<# testing to see if this gets autoremoved from the <autologon> script as expected: 
 ### *REMOVES* AUTO LOGIN AS ".\ITNGAdmin"
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
 Remove-ItemProperty -Path $RegPath -Name "DefaultDomainName"
@@ -29,15 +35,15 @@ Remove-ItemProperty -Path $RegPath -Name "DefaultUsername"
 Remove-ItemProperty -Path $RegPath -Name "DefaultPassword"
 Remove-ItemProperty -Path $RegPath -Name "AutoAdminLogon"
 Remove-ItemProperty -Path $RegPath -Name "ForceAutoLogon"
+#> 
 	# Removes auto screen unlock
 Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization"
-	Log-Message "Removed all registry keys to disable auto logon."
+	Log-Message "Removed registry key to keep screen unlocked"
+	#Log-Message "Removed all registry keys to disable auto logon."
 Start-Sleep -Seconds 1
 
-### REMOVE CURRENT REG KEY for NEW_SETUP_PART_4.PS1
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
-Remove-Item -Path $RegPath 
-	Log-Message "Removed all registry keys to run powershell scripts on logon." 
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
+Get-ItemProperty -Path $RegPath | Log-Message 
 
 # RUN DELL COMMAND UPDATE (2nd pass)
 cd "c:\program files (x86)\Dell\CommandUpdate\"
@@ -49,21 +55,11 @@ cd "c:\program files (x86)\Dell\CommandUpdate\"
 dism /online /cleanup-image /restorehealth
 dism /online /cleanup-image /startcomponentcleanup
 sfc /scannow
-
-### *REMOVES* AUTO LOGIN AS ".\ITNGAdmin"
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
-Remove-ItemProperty -Path $RegPath -Name "DefaultDomainName"
-Remove-ItemProperty -Path $RegPath -Name "DefaultUsername"
-Remove-ItemProperty -Path $RegPath -Name "DefaultPassword"
-Remove-ItemProperty -Path $RegPath -Name "AutoAdminLogon"
-Remove-ItemProperty -Path $RegPath -Name "ForceAutoLogon"
-	# Removes auto screen unlock
-Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization"
-	Log-Message "Ran second pass to ensure removal of all registry keys to disable auto logon - ignore any errors on screen."
+	Log-Message "Ran DISM and SFC for system cleanup."
 
 ### REMOVE CURRENT REG KEY for NEW_SETUP_PART_4.PS1
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
-Remove-Item -Path $RegPath 
+Remove-Item -Path $RegPath -ErrorAction SilentlyContinue
 	Log-Message "Ran second pass to ensure removal of all registry keys to run powershell scripts on logon - ignore any errors on screen." 
 	
 # FORCE CHANGE ITNGADMIN PASSWORD FROM DEFAULT:
