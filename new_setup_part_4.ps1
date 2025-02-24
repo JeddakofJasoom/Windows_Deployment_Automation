@@ -42,9 +42,6 @@ Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization"
 	#Log-Message "Removed all registry keys to disable auto logon."
 Start-Sleep -Seconds 1
 
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
-Get-ItemProperty -Path $RegPath | Log-Message 
-
 # RUN DELL COMMAND UPDATE (2nd pass)
 cd "c:\program files (x86)\Dell\CommandUpdate\"
 & ".\dcu-cli.exe" /scan 

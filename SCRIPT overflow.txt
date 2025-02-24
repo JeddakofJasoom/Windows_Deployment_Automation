@@ -61,6 +61,7 @@ script 3 -
 	reboot
 auto login as admin (from <autologon>) 
 script 4 -
+	create logging function
 	remove ALL reg keys to autologin as itngadmin
 	remove reg key to run script 4 on next login
 	run dell command (2nd pass)

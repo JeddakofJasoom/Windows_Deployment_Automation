@@ -8,9 +8,16 @@ TODO: update script overflow list for part 1
 
 ############ START CUSTOM LOGIN SCRIPT ############
 
+<#
+#set delay on first logon: 
+Start-Sleep -Seconds 60
+
 
 # STOP WINDOWS UPDATE SERVICE (temporarily)
 Set-Service -Name wuauserv -StartupType Disabled -Status stopped
+
+Start-Sleep -Seconds 10
+#>
 
 # CREATE LOCAL SOURCES FOLDER FOR INSTALLATION AND LOGGING:
 	# Define folders for holding the installers, scripts, and log files. 
