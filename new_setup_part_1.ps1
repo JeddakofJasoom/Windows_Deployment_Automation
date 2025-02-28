@@ -8,16 +8,30 @@ TODO: update script overflow list for part 1
 
 ############ START CUSTOM LOGIN SCRIPT ############
 
-<#
-#set delay on first logon: 
-Start-Sleep -Seconds 60
+Start-Sleep -Seconds 30
+
+	# prevents screen from locking on auto login to monitor running script processes:
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Personalization" -Force
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -Value "1" -ErrorAction SilentlyContinue
+Start-Sleep -Seconds 1
 
 
-# STOP WINDOWS UPDATE SERVICE (temporarily)
-Set-Service -Name wuauserv -StartupType Disabled -Status stopped
+### REMOVE CURRENT REG KEY for NEW_SETUP_PART_0.PS1
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+Remove-Item -Path $RegPath  
+	Log-Message "Removed registry key to run part 0 script."
+Start-Sleep -Seconds 1
 
-Start-Sleep -Seconds 10
-#>
+
+### RUN NEW_SETUP_PART_2.PS1 ON NEXT LOGON
+New-Item -path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "RunOnce" -Force
+$ScriptPath = "C:\Sources\new_setup_part_2.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
+Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
+	Log-Message "Set registry key to run setup part 2 on next logon." 
+Start-Sleep -Seconds 1
+
 
 # CREATE LOCAL SOURCES FOLDER FOR INSTALLATION AND LOGGING:
 	# Define folders for holding the installers, scripts, and log files. 
@@ -48,30 +62,6 @@ if ($displayMessage) {
 	# Start Logging:
 	Log-Message "New Setup Part 1 Script has started."	
 
-<# TESTING to see if we still need this section as the <autologon> in the autounattend.XML appears to do this automatically. 
-### SETS AUTO LOGIN AS ".\ITNGAdmin" ON NEXT LOGIN
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
-Set-ItemProperty -Path $RegPath -Name "DefaultDomainName" -Value ""
-Set-ItemProperty -Path $RegPath -Name "DefaultUsername" -Value ".\ITNGAdmin"
-Set-ItemProperty -Path $RegPath -Name "DefaultPassword" -Value "password"
-Set-ItemProperty -Path $RegPath -Name "AutoAdminLogon" -Value "1"
-Set-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
-#> 
-	# prevents screen from locking on auto login to monitor running script processes:
-New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Personalization" -Force
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -Value "1" -ErrorAction Continue
-	Log-Message "Set registry keys to force auto login with ITNGAdmin account on next logon."
-Start-Sleep -Seconds 1
-
-### RUN NEW_SETUP_PART_2.PS1 ON NEXT LOGON
-New-Item -path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "RunOnce" -Force
-$ScriptPath = "C:\Sources\new_setup_part_2.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
-$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
-Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
-	Log-Message "Set registry key to run setup part 2 on next logon." 
-Start-Sleep -Seconds 1
-
 #COPY ALL CONTENTS OF D:\SCRIPTS TO C:\SOURCES :
 try {
 Copy-Item -Path "$sourceFolder\*" -Destination $destinationFolder -Recurse -Force -ErrorAction Stop
@@ -99,39 +89,26 @@ Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Install-Module PSWindowsUpdate -Force
 Log-Message "Installed Powershell Module 'PSWindowsUpdate' to enable Windows Updates through Powershell"
 
-# RESTART WINDOWS UPDATE 
-Set-Service -Name wuauserv -StartupType Automatic -Status running -ErrorAction Continue
-Log-Message "Restarting Windows Update Service."
-
-# INSTALL WINDOWS UPDATES!!!
-	Log-Message "Running: Windows Updates Installation"
-$winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction Continue 2>&1
-	Log-Message "Installed additional Windows updates: $winupdateResult"
-
-<# TESTING to see if we still need this section as the <autologon> in the autounattend.XML appears to do this automatically. 
-### SETS AUTO LOGIN AS ".\ITNGAdmin" ON NEXT LOGIN
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
-Set-ItemProperty -Path $RegPath -Name "DefaultDomainName" -Value ""
-Set-ItemProperty -Path $RegPath -Name "DefaultUsername" -Value ".\ITNGAdmin"
-Set-ItemProperty -Path $RegPath -Name "DefaultPassword" -Value "password"
-Set-ItemProperty -Path $RegPath -Name "AutoAdminLogon" -Value "1"
-Set-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
-	# prevents screen from locking on auto login to monitor running script processes:
-New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Personalization" -Force
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -Value "1"
-	Log-Message "Ran second pass to set registry keys to force auto login with ITNGAdmin account on next logon - ignore any errors on screen."
-#>
-
-### RUN NEW_SETUP_PART_2.PS1 ON NEXT LOGON (2nd pass to ensure it runs) 
-New-Item -path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "RunOnce" -Force -ErrorAction SilentlyContinue
-$ScriptPath = "C:\Sources\new_setup_part_2.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
-$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs -ErrorAction SilentlyContinue"
-Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
-	Log-Message "Ran second pass to set registry key to run setup part 2 on next logon - ignore any errors on screen." 
+# INSTALL WINDOWS UPDATES 
+$winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction Continue 2>&1 | Out-String
+	Log-Message "Installed additional Windows updates: `n$winupdateResult"
 
 # REBOOT PC 
-Write-Host "Windows updates are installed and require reboot. Rebooting PC in 5 seconds..." -ForegroundColor Red
+Write-Host "Windows Updates 2nd pass installed along with standard system settings changed. Rebooting PC in 5 seconds..." -ForegroundColor Red
 Log-Message "End of Part 1 setup script."
 Start-Sleep -Seconds 5 #wait 5 seconds to complete logging
 Restart-Computer -force
+
+<#	
+$RebootPending = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired" -ErrorAction SilentlyContinue
+if ($RebootPending -EQ $true) {
+	Write-Host "Windows Updates installed. System will restart in 10 seconds." -ForegroundColor Green
+	Log-Message "End of Part 1 setup script."
+	Start-Sleep -Seconds 10  # Short delay before forcing reboot
+	Restart-Computer -Force
+	break
+} else {
+	Write-Host "Updates still installing... Checking again in 30 seconds." -ForegroundColor Yellow
+	Start-Sleep -Seconds 30
+}
+#>

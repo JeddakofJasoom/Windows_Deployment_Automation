@@ -6,6 +6,8 @@ TODO: PRINT OUT OVERFLOW LIST AND CHECK WITH DAVID
 TODO: bitlocker enable prompt option...?
 #>
 
+Start-Sleep -Seconds 10
+
 # CREATE CUSTOM FUNCTION TO LOG OUTPUT MESSAGES IN THIS SCRIPT:
 
 $logFile = "C:\Sources\New_Setup_LOG.txt"
@@ -27,26 +29,19 @@ $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
 Remove-Item -Path $RegPath 
 	Log-Message "Removed all registry keys to run powershell scripts on logon." 
 
-<# testing to see if this gets autoremoved from the <autologon> script as expected: 
-### *REMOVES* AUTO LOGIN AS ".\ITNGAdmin"
-$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
-Remove-ItemProperty -Path $RegPath -Name "DefaultDomainName"
-Remove-ItemProperty -Path $RegPath -Name "DefaultUsername"
-Remove-ItemProperty -Path $RegPath -Name "DefaultPassword"
-Remove-ItemProperty -Path $RegPath -Name "AutoAdminLogon"
-Remove-ItemProperty -Path $RegPath -Name "ForceAutoLogon"
-#> 
 	# Removes auto screen unlock
 Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization"
 	Log-Message "Removed registry key to keep screen unlocked"
 	#Log-Message "Removed all registry keys to disable auto logon."
 Start-Sleep -Seconds 1
 
+
 # RUN DELL COMMAND UPDATE (2nd pass)
 cd "c:\program files (x86)\Dell\CommandUpdate\"
 & ".\dcu-cli.exe" /scan 
 & ".\dcu-cli.exe" /ApplyUpdates -reboot=Disable
 	Log-Message "Dell Command updates installed." 
+
 
 # SYSTEM CLEANUP
 dism /online /cleanup-image /restorehealth
@@ -95,12 +90,13 @@ $destinationFolder = "C:\Users\ITNGAdmin\Desktop\"
 	Log-Message "Removed C:\Sources folder from this system as final cleanup task."
     Log-Message "~~~~~~"
     Log-Message "All commands have been run and system is set to standard configuration. Please check the C:\Sources\New_Setup_LOG.txt for complete setup log information."
+Start-Sleep -Seconds 2
 Copy-Item -Path $sourceFile -Destination $destinationFolder -Force
 Remove-Item -Path "C:\Sources" -Recurse -Force
 	
 # Force open setup log in notepad to check completion: 
 Write-Host "Opening New Setup Log File now, please check settings changes!" -ForegroundColor Red
-Start-Sleep -Seconds 3
+Start-Sleep -Seconds 5
 Start-Process notepad.exe "C:\Users\ITNGAdmin\Desktop\New_Setup_LOG.txt"
 
 

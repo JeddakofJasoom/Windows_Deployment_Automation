@@ -149,7 +149,7 @@
             </Password>
 			<Domain></Domain>
             <Enabled>true</Enabled>
-            <LogonCount>6</LogonCount>
+            <LogonCount>7</LogonCount>
 			<Username>ITNGAdmin</Username>
         </AutoLogon>
 <FirstLogonCommands>

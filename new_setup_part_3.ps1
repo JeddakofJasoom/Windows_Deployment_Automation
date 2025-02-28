@@ -4,6 +4,8 @@ TODO: bloatware removal - check with David if missing anything or need to trunca
 TODO: add default user profile XML ...? pull from completed test machine and try in separate script first. 
 #>
 
+Start-Sleep -Seconds 10
+
 # CREATE CUSTOM FUNCTION TO LOG OUTPUT MESSAGES IN THIS SCRIPT:
 
 $logFile = "C:\Sources\New_Setup_LOG.txt"

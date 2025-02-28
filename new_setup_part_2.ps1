@@ -5,7 +5,7 @@ TODO: remove the network checks in part 2 or move to part 3?
 TODO: - add spacer in it for section??
 #>
 
-
+Start-Sleep -Seconds 10
 
 # CREATE CUSTOM FUNCTION TO LOG OUTPUT MESSAGES IN THIS SCRIPT:
 
@@ -42,7 +42,7 @@ powercfg.exe /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
 # DISABLE IPV6 ON ALL NETWORK ADAPTERS:
 $adapters = Get-NetAdapter
 foreach ($adapter in $adapters) {
-	Set-NetAdapterBinding -Name $adapter.Name -ComponentID ms_tcpip6 -Enabled $false -ErrorAction Stop
+	Set-NetAdapterBinding -Name $adapter.Name -ComponentID ms_tcpip6 -Enabled $false -ErrorAction SilentlyContinue
 Log-Message "Disabled IPv6 on network adapter: $($adapter.Name)." }
 
 # SET NETWORK TYPE TO PRIVATE FOR ALL ADAPTERS (DEFAULT IS PUBLIC).   
