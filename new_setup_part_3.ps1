@@ -35,7 +35,6 @@ $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
 $ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
 Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
 
-
 ###user profile settings change: 
 
 	# DISABLE WIDGETS

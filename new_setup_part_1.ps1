@@ -8,19 +8,19 @@ TODO: update script overflow list for part 1
 
 ############ START CUSTOM LOGIN SCRIPT ############
 
-Start-Sleep -Seconds 30
+Start-Sleep -Seconds 10
 
 	# prevents screen from locking on auto login to monitor running script processes:
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Personalization" -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -Value "1" -ErrorAction SilentlyContinue
-Start-Sleep -Seconds 1
+Start-Sleep -Seconds 2
 
 
 ### REMOVE CURRENT REG KEY for NEW_SETUP_PART_0.PS1
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
 Remove-Item -Path $RegPath  
 	Log-Message "Removed registry key to run part 0 script."
-Start-Sleep -Seconds 1
+Start-Sleep -Seconds 2
 
 
 ### RUN NEW_SETUP_PART_2.PS1 ON NEXT LOGON
@@ -30,7 +30,7 @@ $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
 $ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
 Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
 	Log-Message "Set registry key to run setup part 2 on next logon." 
-Start-Sleep -Seconds 1
+Start-Sleep -Seconds 2
 
 
 # CREATE LOCAL SOURCES FOLDER FOR INSTALLATION AND LOGGING:
@@ -92,23 +92,22 @@ Log-Message "Installed Powershell Module 'PSWindowsUpdate' to enable Windows Upd
 # INSTALL WINDOWS UPDATES 
 $winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction Continue 2>&1 | Out-String
 	Log-Message "Installed additional Windows updates: `n$winupdateResult"
+Start-Sleep -Seconds 180 
 
-# REBOOT PC 
-Write-Host "Windows Updates 2nd pass installed along with standard system settings changed. Rebooting PC in 5 seconds..." -ForegroundColor Red
-Log-Message "End of Part 1 setup script."
-Start-Sleep -Seconds 5 #wait 5 seconds to complete logging
-Restart-Computer -force
-
-<#	
-$RebootPending = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired" -ErrorAction SilentlyContinue
-if ($RebootPending -EQ $true) {
-	Write-Host "Windows Updates installed. System will restart in 10 seconds." -ForegroundColor Green
-	Log-Message "End of Part 1 setup script."
-	Start-Sleep -Seconds 10  # Short delay before forcing reboot
-	Restart-Computer -Force
-	break
-} else {
-	Write-Host "Updates still installing... Checking again in 30 seconds." -ForegroundColor Yellow
-	Start-Sleep -Seconds 30
+function Force-RestartAfterUpdates {
+    Write-Host "Monitoring Windows Update installation..." -ForegroundColor Cyan
+$UpdatesPending = $true
+    while ($UpdatesPending) {
+        # Check if a reboot is required after updates
+       # Check for updates
+    if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired") {
+        $UpdatesPending = $false  # Stop the loop
+        Restart-Computer -Force
+        break
+    }
+    else {
+            Write-Host "Updates still installing... Checking again in 30 seconds." -ForegroundColor Yellow
+            Start-Sleep -Seconds 30
+        }
+    }
 }
-#>
