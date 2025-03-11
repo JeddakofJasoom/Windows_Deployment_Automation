@@ -1,10 +1,8 @@
 #SET DELAY ON FIRST LOGON: 
-Write-Host "Windows updates are running automatically. Will check for pending reboot status in 10 minutes to automatically reboot." 
+Write-Host "Windows updates are running automatically. Waiting 1 minute for DHCP to pull IP address and install necessary drivers."
+	Start-Sleep -Seconds 60 
 
-#WAIT 1 MINUTE FOR DHCP TO PULL IP AND WINDOWS UPDATES START AUTOMATICALLY. 
-Start-Sleep -Seconds 60 
-
-#DISABLE AUTO SCREEN LOCK. 
+#DISABLE AUTO SCREEN LOCK
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Personalization" -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -Value "1" -ErrorAction Continue
 	Write-Host "Set registry keys to disable screen lock while running updates to monitor progress." -Foregroundcolor Green
@@ -24,12 +22,12 @@ powercfg.exe /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
 powercfg -x standby-timeout-ac 0   # Disables sleep when on AC power
 Write-Host "Disabled sleep while on AC power." -Foregroundcolor Green
 
-#$winupdateResult = Get-WindowsUpdate -AcceptAll -Install -ErrorAction Continue 2>&1 | Out-String
-
+#WAIT 10 MINUTES FOR WINDOWS UPDATES TO INSTALL
+Write-Host "Windows updates are currently running. Will check for pending reboot status in 10 minutes to automatically reboot." 
     Write-Host "Monitoring Windows Update installation..." -ForegroundColor Cyan
 Start-Sleep -Seconds 600 #wait 10 minutes
 
-#CHECK FOR REBOOT REQUIRED EVERY 30 SECONDS. REBOOT WHEN PENDING. 
+#CHECK FOR "REBOOT REQUIRED" REG KEY, EVERY 30 SECONDS. AUTOMATICALLY REBOOT WHEN REG KEY EXISTS. 
 function Force-RestartAfterUpdates {
 $UpdatesPending = $true
     while ($UpdatesPending) {
@@ -37,11 +35,9 @@ $UpdatesPending = $true
     if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired") {
         $UpdatesPending = $false  # Stop the loop
         Restart-Computer -Force
-    }
-    else {
+    } else {
 		Write-Host "Updates still installing... Checking again in 30 seconds." -ForegroundColor Yellow
 		Start-Sleep -Seconds 30
-    }
-}	}
+    }	}	}
 #run function: 
 Force-RestartAfterUpdates

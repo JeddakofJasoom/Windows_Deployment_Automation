@@ -1,29 +1,24 @@
-<#
-TODO: add try / catch and throw error if sources folder doesn't get copied over?? add a throw??
-TODO: check windows updates stops with admin PS script from answer file
-TODO: update script overflow list for part 1
-#>
+# new setup part 1
 
-#Trying new method of doing an auto logon through the autounattend.XML file on new load. If it does not load, you can manually run this script using the "RUNME.bat" batch file in the D:\Scripts folder. 
 
-############ START CUSTOM LOGIN SCRIPT ############
+Write-Host "Beginning 'new setup part 1' in 10 seconds. Please do not interact with the screen as this script is automated to reboot." 
+	Start-Sleep -Seconds 10
 
-Start-Sleep -Seconds 10
-
-	# prevents screen from locking on auto login to monitor running script processes:
+# PREVENTS SCREEN FROM LOCKING ON AUTO LOGIN TO MONITOR RUNNING SCRIPT PROCESSES:
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Personalization" -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -Value "1" -ErrorAction SilentlyContinue
-Start-Sleep -Seconds 2
+Write-Host "Set registry keys to disable screen lock while running updates to monitor progress." -Foregroundcolor Green
+	Start-Sleep -Seconds 2
 
 
-### REMOVE CURRENT REG KEY for NEW_SETUP_PART_0.PS1
+# REMOVE CURRENT REG KEY for NEW_SETUP_PART_0.PS1
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
 Remove-Item -Path $RegPath  
 	Log-Message "Removed registry key to run part 0 script."
 Start-Sleep -Seconds 2
 
 
-### RUN NEW_SETUP_PART_2.PS1 ON NEXT LOGON
+# RUN NEW_SETUP_PART_2.PS1 ON NEXT LOGON
 New-Item -path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "RunOnce" -Force
 $ScriptPath = "C:\Sources\new_setup_part_2.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
@@ -62,7 +57,7 @@ if ($displayMessage) {
 	# Start Logging:
 	Log-Message "New Setup Part 1 Script has started."	
 
-#COPY ALL CONTENTS OF D:\SCRIPTS TO C:\SOURCES :
+# COPY ALL CONTENTS OF D:\SCRIPTS TO C:\SOURCES :
 try {
 Copy-Item -Path "$sourceFolder\*" -Destination $destinationFolder -Recurse -Force -ErrorAction Stop
 	Log-Message "Copied all content from $sourceFolder folder to $destinationFolder"
@@ -111,3 +106,5 @@ $UpdatesPending = $true
         }
     }
 }
+#run function: 
+Force-RestartAfterUpdates

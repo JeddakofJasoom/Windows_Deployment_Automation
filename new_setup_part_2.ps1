@@ -1,8 +1,5 @@
 <# 
 TODO: update script overflow list for part 1
-TODO: move network config from part to here, and update the order. 
-TODO: remove the network checks in part 2 or move to part 3?
-TODO: - add spacer in it for section??
 #>
 
 Start-Sleep -Seconds 10

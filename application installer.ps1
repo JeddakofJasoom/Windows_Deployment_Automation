@@ -5,23 +5,24 @@
     Write-Host "Installing latest version of 'NuGet' package from Microsoft" -ForegroundColor Yellow
 	Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 
-###RUN WINGET TO INSTALL STANDARD APPLICATIONS.###
-Write-Host "Running 'WinGet' to install standard software applications." -ForegroundColor Yellow 
+###RUN WINGET TO INSTALL SPECIFIC APPLICATIONS.###
+Write-Host "Running 'WinGet' to install specific software applications." -ForegroundColor Yellow 
 # Define the applications to install (name and corresponding winget package)
 $apps = @(
 	@{Name="Powershell 7"; Package="microsoft.powershell"},
 	@{Name="Google Chrome"; Package="Google.Chrome"},
 	@{Name="Adobe Acrobat Reader"; Package="adobe.acrobat.reader.64-bit"},
-	@{Name="Dell Command Update"; Package="Dell.CommandUpdate"}
-#Uncomment and add more applications as needed:
+#Uncomment and add more applications as needed:	
+#	@{Name="Dell Command Update"; Package="Dell.CommandUpdate"}
+#	@{Name="Lenovo Commercial Vantage"; Package="9NR5B8GVVM13"},
+#	@{Name="Adobe Acrobat Pro"; Package="adobe.acrobat.Pro"},
 #	@{Name="Splashtop Streamer"; Package="Splashtop.SplashtopStreamer"},
+#	@{Name="Zoom Workplace "; Package="Zoom.Zoom"},
 #   @{Name="VLC Media Player"; Package="VideoLAN.VLC"}
 #   @{Name="Firefox"; Package="Mozilla.Firefox"}
 #	@{Name="Bluebeam Revu 20"; Package="Bluebeam.Revu.20"},
 #	@{Name="Bluebeam Revu 21"; Package="Bluebeam.Revu.21"},
 #	@{Name="BluebeamOCR 21"; Package="Bluebeam.BluebeamOCR.21"},
-#	@{Name=" "; Package=" "},
-#	@{Name=" "; Package=" "},
 #	@{Name=" "; Package=" "},
 # 	@{Name=" "; Package=" "},
 )
@@ -51,11 +52,13 @@ winget.exe upgrade --all
 	# NOTE: needs the additional parameters to prevent GUI popup. 
 	# NOTE: Be sure to have both the .exe and .xml file in the $sources folder.
 	# NOTE: Change $sources directory as needed: 
+<#
 	$sources = "C:\Sources"
 	$Office365InstallPath = "$sources\OfficeSetup.exe"
 	$configurationFilePath = "$sources\O365Configuration.xml"
 	$arguments = "/configure $configurationFilePath"
 Start-Process -FilePath $Office365InstallPath -ArgumentList $arguments -Wait 
+#>
 
 # install Sonicwall NetExtender:
 # msiexec.exe /i "D:\Scripts\NetExtender-x64-10.2.341.msi" /qn /norestart server=#.#.#.# domain=LocalDomain EDITABLE=TRUE netlogon=true ALLUSERS=2
