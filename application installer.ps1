@@ -7,37 +7,53 @@
 
 ###RUN WINGET TO INSTALL SPECIFIC APPLICATIONS.###
 Write-Host "Running 'WinGet' to install specific software applications." -ForegroundColor Yellow 
+
 # Define the applications to install (name and corresponding winget package)
 $apps = @(
-	@{Name="Powershell 7"; Package="microsoft.powershell"},
-	@{Name="Google Chrome"; Package="Google.Chrome"},
-	@{Name="Adobe Acrobat Reader"; Package="adobe.acrobat.reader.64-bit"},
-#Uncomment and add more applications as needed:	
-#	@{Name="Dell Command Update"; Package="Dell.CommandUpdate"}
-#	@{Name="Lenovo Commercial Vantage"; Package="9NR5B8GVVM13"},
-#	@{Name="Adobe Acrobat Pro"; Package="adobe.acrobat.Pro"},
-#	@{Name="Splashtop Streamer"; Package="Splashtop.SplashtopStreamer"},
-#	@{Name="Zoom Workplace "; Package="Zoom.Zoom"},
-#   @{Name="VLC Media Player"; Package="VideoLAN.VLC"}
-#   @{Name="Firefox"; Package="Mozilla.Firefox"}
-#	@{Name="Bluebeam Revu 20"; Package="Bluebeam.Revu.20"},
-#	@{Name="Bluebeam Revu 21"; Package="Bluebeam.Revu.21"},
-#	@{Name="BluebeamOCR 21"; Package="Bluebeam.BluebeamOCR.21"},
-#	@{Name=" "; Package=" "},
-# 	@{Name=" "; Package=" "},
+    [PSCustomObject]@{Name="Powershell 7"; Package="microsoft.powershell"},
+    [PSCustomObject]@{Name="Google Chrome"; Package="Google.Chrome"},
+    [PSCustomObject]@{Name="Adobe Acrobat Reader"; Package="adobe.acrobat.reader.64-bit"}
+    [PSCustomObject]@{Name="Adobe Acrobat Pro"; Package="adobe.acrobat.Pro"},
+    [PSCustomObject]@{Name="Dell Command Update"; Package="Dell.CommandUpdate"},
+    [PSCustomObject]@{Name="Lenovo Commercial Vantage"; Package="9NR5B8GVVM13"},
+    [PSCustomObject]@{Name="Splashtop Streamer"; Package="Splashtop.SplashtopStreamer"},
+    [PSCustomObject]@{Name="Zoom Workplace"; Package="Zoom.Zoom"},
+    [PSCustomObject]@{Name="VLC Media Player"; Package="VideoLAN.VLC"},
+    [PSCustomObject]@{Name="Firefox"; Package="Mozilla.Firefox"},
+    [PSCustomObject]@{Name="Bluebeam Revu 20"; Package="Bluebeam.Revu.20"},
+    [PSCustomObject]@{Name="Bluebeam Revu 21"; Package="Bluebeam.Revu.21"},
+    [PSCustomObject]@{Name="BluebeamOCR 21"; Package="Bluebeam.BluebeamOCR.21"}
+# Uncomment and add more applications as needed:
+#	[PSCustomObject]@{Name=" "; Package=" "}
+#	[PSCustomObject]@{Name=" "; Package=" "}
+#	[PSCustomObject]@{Name=" "; Package=" "}
+#	[PSCustomObject]@{Name=" "; Package=" "}
 )
+
+# Let user select apps from the list
+$selectedApps = $apps | Out-GridView -Title "Select Applications to Install" -PassThru
+
+# Install selected applications
+foreach ($app in $selectedApps) {
+    Write-Host "Installing: $($app.Name)" -ForegroundColor Cyan
+    winget.exe install $app.Package --scope machine --silent --accept-source-agreements
+}
+
+Write-Host "Installation process complete!" -ForegroundColor Green
+
 	<#NOTES: 
 		: YOU HAVE TO REMOVE THE " , " ON THE LAST APPLICATION OR THIS WILL FAIL!!!
 		: make sure there is a "," after each "}" until the last "}" to ensure all apps are installed. 
 		: you need to use the specific package name as listed in the winget repository
 		: winget search "*app name*" will return list of all available versions of the application. 
 			:: The * * act as wild cards for your query. #>
-
+<#
 ## INSTALL ALL APPLICATIONS LISTED ABOVE.## 
 foreach ($app in $apps) { #attempt to install all applications listed in above function
 winget.exe install $app.Package --scope machine --silent --accept-source-agreements
 winget.exe upgrade --all
 }
+#>
 	<# NOTES: 
 		: for quick single installs use the standard installation command below.
 			: Add app package name in the "". 
