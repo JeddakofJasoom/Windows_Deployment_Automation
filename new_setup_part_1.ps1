@@ -1,7 +1,7 @@
 # new setup part 1
 
 
-Write-Host "Beginning 'new setup part 1' in 10 seconds. Please do not interact with the screen as this script is automated to reboot." 
+Write-Host "Starting 'New setup part 1' in 10 seconds... Please do not interact with the screen as this script is automated to reboot." -ForegroundColor Yellow
 	Start-Sleep -Seconds 10
 
 # PREVENTS SCREEN FROM LOCKING ON AUTO LOGIN TO MONITOR RUNNING SCRIPT PROCESSES:
@@ -97,6 +97,9 @@ $UpdatesPending = $true
        # Check for updates
     if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired") {
         $UpdatesPending = $false  # Stop the loop
+		# PRINT TO SCREEN 10 SECOND COUNTDOWN AND FORCE REBOOT PC. 
+		Write-Host "Windows Updates are installed and require reboot. Rebooting PC in 10 seconds..." -ForegroundColor Red
+		Start-Sleep -Seconds 10 
         Restart-Computer -Force
         break
     }

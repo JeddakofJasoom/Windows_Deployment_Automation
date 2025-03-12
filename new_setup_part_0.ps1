@@ -1,3 +1,5 @@
+#Setup part 0
+
 #SET DELAY ON FIRST LOGON: 
 Write-Host "Windows updates are running automatically. Waiting 1 minute for DHCP to pull IP address and install necessary drivers."
 	Start-Sleep -Seconds 60 
@@ -27,17 +29,7 @@ Write-Host "Windows updates are currently running. Will check for pending reboot
     Write-Host "Monitoring Windows Update installation..." -ForegroundColor Cyan
 Start-Sleep -Seconds 600 #wait 10 minutes
 
-#CHECK FOR "REBOOT REQUIRED" REG KEY, EVERY 30 SECONDS. AUTOMATICALLY REBOOT WHEN REG KEY EXISTS. 
-function Force-RestartAfterUpdates {
-$UpdatesPending = $true
-    while ($UpdatesPending) {
-        # Check if a reboot is required after updates
-    if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired") {
-        $UpdatesPending = $false  # Stop the loop
-        Restart-Computer -Force
-    } else {
-		Write-Host "Updates still installing... Checking again in 30 seconds." -ForegroundColor Yellow
-		Start-Sleep -Seconds 30
-    }	}	}
-#run function: 
-Force-RestartAfterUpdates
+# PRINT TO SCREEN 10 SECOND COUNTDOWN AND FORCE REBOOT PC. 
+Write-Host "Rebooting PC in 10 seconds..." -ForegroundColor Red
+Start-Sleep -Seconds 10 
+Restart-Computer -Force

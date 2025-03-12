@@ -1,8 +1,7 @@
-<# 
-TODO: update script overflow list for part 1
-#>
+#Setup part 2
 
-Start-Sleep -Seconds 10
+Write-Host "Starting 'New setup part 2' in 10 seconds... Please do not interact with the screen as this script is automated to reboot." -ForegroundColor Yellow
+	Start-Sleep -Seconds 10
 
 # CREATE CUSTOM FUNCTION TO LOG OUTPUT MESSAGES IN THIS SCRIPT:
 
