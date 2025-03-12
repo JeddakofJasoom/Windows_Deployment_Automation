@@ -1,10 +1,4 @@
-<#
-TODO: add rmm installer as subfolder in c:\sources?
-TODO: do a check to be sure the reg keys have been removed to autounlock / auto login - last time it didn't get removed. 
-
-TODO: PRINT OUT OVERFLOW LIST AND CHECK WITH DAVID
-TODO: bitlocker enable prompt option...?
-#>
+# Setup part 4
 
 Write-Host "Starting 'New setup part 4' in 10 seconds... Please do not interact with the screen as this script is automated to reboot." -ForegroundColor Yellow
 

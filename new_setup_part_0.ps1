@@ -1,8 +1,8 @@
 #Setup part 0
 
 #SET DELAY ON FIRST LOGON: 
-Write-Host "Windows updates are running automatically. Waiting 1 minute for DHCP to pull IP address and install necessary drivers."
-	Start-Sleep -Seconds 60 
+	Write-Host "Windows updates are running automatically. Waiting 1 minute for DHCP to pull IP address and auto install necessary drivers."
+Start-Sleep -Seconds 60 
 
 #DISABLE AUTO SCREEN LOCK
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Personalization" -Force
@@ -16,7 +16,7 @@ $ScriptPath = "D:\Scripts\new_setup_part_1.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
 $ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
 Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand 
-Write-Host "Set registry keys to run new setup part 1 on next logon." -Foregroundcolor Green
+	Write-Host "Set registry keys to run new setup part 1 on next logon." -Foregroundcolor Green
 Start-Sleep -Seconds 5
 
 #SET POWER CONFIG TO PREVENT SLEEP. 
@@ -25,9 +25,8 @@ powercfg -x standby-timeout-ac 0   # Disables sleep when on AC power
 Write-Host "Disabled sleep while on AC power." -Foregroundcolor Green
 
 #WAIT 10 MINUTES FOR WINDOWS UPDATES TO INSTALL
-Write-Host "Windows updates are currently running. Will check for pending reboot status in 10 minutes to automatically reboot." 
-    Write-Host "Monitoring Windows Update installation..." -ForegroundColor Cyan
-Start-Sleep -Seconds 600 #wait 10 minutes
+    Write-Host "Windows Updates are auto installing necessary drivers. Will reboot PC in 5 minutes to start main installation and setup." -ForegroundColor Cyan
+Start-Sleep -Seconds 300 #wait 5 minutes
 
 # PRINT TO SCREEN 10 SECOND COUNTDOWN AND FORCE REBOOT PC. 
 Write-Host "Rebooting PC in 10 seconds..." -ForegroundColor Red

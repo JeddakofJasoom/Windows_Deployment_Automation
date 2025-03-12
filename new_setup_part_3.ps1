@@ -31,7 +31,8 @@ $ScriptPath = "C:\Sources\new_setup_part_4.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
 $ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
 Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
-
+	Log-Message "Added registry key to run part 4 script."
+Start-Sleep -Seconds 1
 
 	###################################
 	#~ USER PROFILE SETTINGS CHANGE: ~#
@@ -40,7 +41,7 @@ Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
 					
 # INSTALL THE POLICYFILEEDITOR MODULE TO UPDATE LOCAL GROUP POLICY 
 Try {
-    $null = Get-InstalledModule PolicyFileEditor -ErrorAction Stop
+    $null = Get-InstalledModule PolicyFileEditor -ErrorAction Continue
 } Catch {
     if ( -not ( Get-PackageProvider -ListAvailable | Where-Object Name -eq "Nuget" ) ) {
         $null = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
@@ -57,6 +58,8 @@ $WinVer = Get-CimInstance win32_operatingsystem
 # DEFINE COMPUTER (HKLM) POLICIES:
 $ComputerPolicies = @(
 # DISABLE NEWS/INTERESTS ON TASKBAR
+	[PSCustomObject]@{Key = 'SOFTWARE\Policies\Microsoft\Dsh'; ValueName = 'AllowNewsAndInterests'; Data = '0'; Type = 'Dword' } 
+# DISABLE WIDGETS
     [PSCustomObject]@{Key = 'Software\Policies\Microsoft\Windows\Windows Feeds'; ValueName = 'EnableFeeds'; Data = '0'; Type = 'Dword' }
 # 	[PSCustomObject]@{Key = ' '; ValueName = ' '; Data = ' '; Type = 'Dword' }
 # 	[PSCustomObject]@{Key = ' '; ValueName = ' '; Data = ' '; Type = 'Dword' }
@@ -79,8 +82,8 @@ $UserPolicies = @(
 # Set group policies
 try {
     Write-Output 'Setting local group policies...'
-    $ComputerPolicies | Set-PolicyFileEntry -Path $ComputerPolicyFile -ErrorAction Stop
-    $UserPolicies | Set-PolicyFileEntry -Path $UserPolicyFile -ErrorAction Stop
+    $ComputerPolicies | Set-PolicyFileEntry -Path $ComputerPolicyFile -ErrorAction Continue
+    $UserPolicies | Set-PolicyFileEntry -Path $UserPolicyFile -ErrorAction Continue
     gpupdate /force /wait:0 | Out-Null
     Write-Output 'Group policies set.'
 }
@@ -91,27 +94,23 @@ catch {
   
 # CLEANUP START MENU & TASKBAR
 try {
-    if ($WinVer.Caption -like '*Windows 11*') {
-        # Reset existing start menu layouts
-        $Layout = 'AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState'
-        Get-ChildItem 'C:\Users' | ForEach-Object { Remove-Item "C:\Users\$($_.Name)\$Layout" -Recurse -Force -ErrorAction Ignore }
+    $Layout = 'AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState'
+    Get-ChildItem 'C:\Users' | ForEach-Object { Remove-Item "C:\Users\$($_.Name)\$Layout" -Recurse -Force -ErrorAction Ignore }
     }
-    # Restart Explorer 
-    if ($env:USERNAME -ne 'defaultuser0') { Get-Process -Name Explorer -ErrorAction SilentlyContinue | Stop-Process -Force }
+ Get-Process -Name "Explorer" -ErrorAction SilentlyContinue | Stop-Process -Force 
 }
 catch {
     Write-Warning 'Unable to complete start menu & taskbar cleanup tasks.'
     Write-Output $_
 }
+Log-Message "Set Local Group Policies to create registry keys to adjust new user layout." 
+
 	
-	# SET DEFAULT APPS:
+# SET DEFAULT APPS:
 dism /online /Import-DefaultAppAssociations:C:\Sources\DefaultApps.xml
-<#
-.html = Chrome
-.pdf = Adobe
-mailto = OUTLOOK
-.eml = OUTLOOK
-#>
+<# 	.html = Chrome | .pdf = Adobe | mailto = Outlook | .eml = Outlook #>
+	Log-Message "Set Default apps to Chrome, Adobe, and Outlook for new user profiles."
+
 #endregion user profile changes
 
 	################################
@@ -170,13 +169,13 @@ ForEach ($Package in $Packages) {
 } }
 
 # Display Results - Successfully Removed: 
-Write-Host "`n=== Removal Summary ===" -ForegroundColor Cyan
-Write-Host "`nSuccessfully Removed Packages:" -ForegroundColor Green
-$RemovedPackages | ForEach-Object { Write-Host $_ }
+	Log-Message "`n=== Removal Summary ===" -ForegroundColor Cyan
+	Log-Message "`nSuccessfully Removed Packages:" -ForegroundColor Green
+$RemovedPackages | ForEach-Object { Log-Message $_ }
 
 # Display Results - Failed to Remove (includes already uninstalled): 
-Write-Host "`nFailed to Remove Packages:" -ForegroundColor Red
-$FailedPackages | ForEach-Object { Write-Host $_ }
+	Log-Message "`nFailed to Remove Packages:" -ForegroundColor Red
+$FailedPackages | ForEach-Object { Log-Message $_ }
 
 #endregion bloatware removal
 

@@ -10,17 +10,17 @@ answer file -
 	disable auto screen lock 
 	add reg key to run script 1 on next login
 	set power config to prevent sleep
-	wait 10 minutes for initial windows updates to install 
+	wait 5 minutes for initial windows updates to install 
 	force reboot
 - auto login as admin (from <autologon>) 	
 - script 1 - 
 	disable auto screen lock to monitor script progress
-	delete reg key to run script 1 on next login
-	add reg key to run script 2 on next login
 	create C:\Sources folder
 	create C:\sources\new_setup_log.txt log file
 	create logging function
 	copy d:\Scripts folder to C:\sources
+	delete reg key to run script 1 on next login
+	add reg key to run script 2 on next login
 	set power config (can't get laptops to work yet have to do manual laptops)
 	Install Nuget from Msoft (.NET requirement)
 	install ps module to run winupdate through PS
@@ -61,6 +61,7 @@ answer file -
 	add reg key to auto run script 4
 	user profile settings changes:
 		disable news & interests on taskbar
+		disable widgets
 		disable windows search web results
 		taskbar align to left 
 		disable taskview 

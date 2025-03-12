@@ -31,6 +31,7 @@ $ScriptPath = "C:\Sources\new_setup_part_3.ps1"  # UPDATE TO NEXT SCRIPT NUMBER
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
 $ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
 Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
+	Log-Message "Added registry key to run part 3 script."
 
 #SET ACTIVE POWER PLAN:
 powercfg.exe /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
@@ -104,7 +105,7 @@ Log-Message "Installing WMIC.exe - this will take several minutes."
 Add-WindowsCapability -Online -Name WMIC~~~~ 
 
 # INSTALL *STANDARD* APPLICATIONS USING 'WinGet'
-	Log-Message "Running 'WinGet' to install standard software applications."
+	Log-Message "Running 'WinGet' to install standard software applications: Powershell, Chrome, Adobe Reader, Dell Command."
 # INSTALL POWERSHELL 7 
 winget.exe install Microsoft.Powershell --scope machine --silent --accept-source-agreements
 winget.exe install Google.Chrome --scope machine --silent --accept-source-agreements
@@ -124,6 +125,7 @@ winget.exe upgrade --all
 	$configurationFilePath = "$sources\O365Configuration.xml"
 	$arguments = "/configure $configurationFilePath"
 Start-Process -FilePath $Office365InstallPath -ArgumentList $arguments -Wait
+	Log-Message "Installed Office 365."
 
 # INSTALL WINDOWS UPDATES 
 $winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction Continue 2>&1 | Out-String
