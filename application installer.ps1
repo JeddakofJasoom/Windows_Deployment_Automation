@@ -1,12 +1,11 @@
-#region	WINGET
 	
 #####Install 'NuGet' package if missing from system, depending on Windows version.#####
-	$ConfirmPreference = 'None'
-    Write-Host "Installing latest version of 'NuGet' package from Microsoft" -ForegroundColor Yellow
-	Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-
+if ( -not ( Get-PackageProvider -ListAvailable | Where-Object Name -eq "Nuget" ) ) {
+        Write-Host "Installing latest version of 'NuGet' package from Microsoft" -ForegroundColor Yellow
+		$null = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+    }
+	
 ###RUN WINGET TO INSTALL SPECIFIC APPLICATIONS.###
-Write-Host "Running 'WinGet' to install specific software applications." -ForegroundColor Yellow 
 
 # Define the applications to install (name and corresponding winget package)
 $apps = @(
@@ -66,7 +65,7 @@ winget.exe upgrade --all
 	: The --accept-source-agreements is used to auto select "yes" to use the ms store and allow the command to run automatically.
 winget.exe install "" --scope machine --accept-source-agreements
 	#>
-#endregion WinGet
+
 
 #region other installers
 ## INSTALL OFFICE 365 ##
