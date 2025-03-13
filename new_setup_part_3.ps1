@@ -16,8 +16,12 @@ if ($displayMessage) {
    Write-Host "$logEntry" -ForegroundColor Yellow
 }  Add-Content -Path $logFile -Value $logEntry }
 	# START LOGGING:
-Log-Message "~~~~~"
-Log-Message "New Setup Part 3 Script has started here."
+Log-Message @"
+`n            
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+New Setup Part 3 Script has started here.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"@
 
 ### REMOVE CURRENT REG KEY for NEW_SETUP_PART_3.PS1
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
@@ -41,10 +45,12 @@ Start-Sleep -Seconds 1
 					
 # INSTALL THE POLICYFILEEDITOR MODULE TO UPDATE LOCAL GROUP POLICY 
 Try {
-    $null = Get-InstalledModule PolicyFileEditor -ErrorAction Continue
+    $null = Get-InstalledModule PolicyFileEditor -ErrorAction Stop
 } Catch {
     if ( -not ( Get-PackageProvider -ListAvailable | Where-Object Name -eq "Nuget" ) ) {
         $null = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+        Write-Host "Nuget is not installed on this system, installing now."
+        Log-Message "Installed NuGet on this system as it was not present before."
     }
     $null = Install-Module PolicyFileEditor -Force
 }
@@ -81,29 +87,17 @@ $UserPolicies = @(
  
 # Set group policies
 try {
-    Write-Output 'Setting local group policies...'
+    Write-Host 'Setting local group policies for new user profiles...' -ForegroundColor Yellow
     $ComputerPolicies | Set-PolicyFileEntry -Path $ComputerPolicyFile -ErrorAction Continue
     $UserPolicies | Set-PolicyFileEntry -Path $UserPolicyFile -ErrorAction Continue
     gpupdate /force /wait:0 | Out-Null
-    Write-Output 'Group policies set.'
+    Log-Message "Set Local Group Policies to create registry keys to adjust new user layout."
 }
 catch {
-    Write-Warning 'Unable to apply group policies.'
-    Write-Output $_
+    Log-Message "Unable to apply group policies. See erorr(s): $_"
 }
   
-# CLEANUP START MENU & TASKBAR
-try {
-    $Layout = 'AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState'
-    Get-ChildItem 'C:\Users' | ForEach-Object { Remove-Item "C:\Users\$($_.Name)\$Layout" -Recurse -Force -ErrorAction Ignore }
-    }
- Get-Process -Name "Explorer" -ErrorAction SilentlyContinue | Stop-Process -Force 
-}
-catch {
-    Write-Warning 'Unable to complete start menu & taskbar cleanup tasks.'
-    Write-Output $_
-}
-Log-Message "Set Local Group Policies to create registry keys to adjust new user layout." 
+
 
 	
 # SET DEFAULT APPS:
@@ -130,7 +124,7 @@ $Packages = @(
    'Microsoft.MicrosoftSolitaireCollection',
    'Microsoft.MicrosoftOfficeHub',
    'Microsoft.MixedReality.Portal',
-   'Microsoft.OutlookForWindows', #Outlook (new)
+   'Microsoft.OutlookForWindows*', #Outlook (new)
    'Microsoft.People',
    'Microsoft.PowerAutomateDesktop',
    'Microsoft.Todos', #Todo List
@@ -189,10 +183,16 @@ cd "c:\program files (x86)\Dell\CommandUpdate\"
 & ".\dcu-cli.exe" /scan 
 Log-Message "Installing available Dell updates..."
 & ".\dcu-cli.exe" /ApplyUpdates -reboot=Disable
-	Log-Message "Dell Command updates installed." 
+Write-host "`n"	
+Log-Message "Dell Command updates installed." 
 	
 # REBOOT PC 
 Write-Host "Dell Command Updates are installed and require reboot. Rebooting PC in 5 seconds..." -ForegroundColor Red
-Log-Message "End of Part 3 setup script."
+Log-Message @"
+`n            
+~~~~~~~~~~~~~~
+End of part 3. 
+~~~~~~~~~~~~~~
+"@
 Start-Sleep -Seconds 5 #wait 5 seconds to complete logging
 Restart-Computer -force

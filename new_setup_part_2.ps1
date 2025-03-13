@@ -16,8 +16,12 @@ if ($displayMessage) {
    Write-Host "$logEntry" -ForegroundColor Yellow
 }  Add-Content -Path $logFile -Value $logEntry }
 	# START LOGGING:
-Log-Message "~~~~~"
-Log-Message "New Setup Part 2 Script has started here."
+Log-Message @"
+`n            
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+New Setup Part 2 Script has started here.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"@
 
 ### REMOVE NEW_SETUP_PART_2.PS1 reg key 
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
@@ -32,6 +36,7 @@ $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
 $ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
 Set-ItemProperty -Path $RegPath -Name "AutoRunScript" -Value $ScriptCommand
 	Log-Message "Added registry key to run part 3 script."
+Start-Sleep -Seconds 1
 
 #SET ACTIVE POWER PLAN:
 powercfg.exe /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
@@ -111,10 +116,10 @@ winget.exe install Microsoft.Powershell --scope machine --silent --accept-source
 winget.exe install Google.Chrome --scope machine --silent --accept-source-agreements
 winget.exe install Dell.CommandUpdate --scope machine --silent --accept-source-agreements
 winget.exe install Adobe.Acrobat.Reader.64-bit --scope machine --silent --accept-source-agreements
-
+	Log-Message "Installed Powershell, Chrome, Adobe, and Dell command through winget." 
 
 # CHECK FOR MISSING UPDATES FOR WINGET SOFTWARE
-	Log-Message "Checking for available software updates through WinGet. See output below:"
+	Write-Host "Checking for available software updates through WinGet. See output below:" -ForegroundColor Yellow
 winget.exe upgrade --all
 	Log-Message "All Winget-based software are up to date."
 
@@ -133,6 +138,11 @@ $winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAct
 
 # REBOOT PC 
 Write-Host "Windows Updates 2nd pass installed along with standard system settings changed. Rebooting PC in 5 seconds..." -ForegroundColor Red
-Log-Message "End of Part 2 setup script."
+Log-Message @"
+`n            
+~~~~~~~~~~~~~~
+End of part 2. 
+~~~~~~~~~~~~~~
+"@
 Start-Sleep -Seconds 5 #wait 5 seconds to complete logging
 Restart-Computer -force

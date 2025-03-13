@@ -10,8 +10,6 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalizatio
 Write-Host "Set registry keys to disable screen lock while running updates to monitor progress." -Foregroundcolor Green
 	Start-Sleep -Seconds 2
 
-
-
 # CREATE LOCAL SOURCES FOLDER FOR INSTALLATION AND LOGGING:
 	# Define folders for holding the installers, scripts, and log files. 
 $sourceFolder = "D:\Scripts" 
@@ -39,7 +37,12 @@ if ($displayMessage) {
    Write-Host "$logEntry" -ForegroundColor Yellow
 }  Add-Content -Path $logFile -Value $logEntry }
 	# Start Logging:
-	Log-Message "New Setup Part 1 Script has started."	
+Log-Message @"
+`n            
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+New Setup Part 1 Script has started here.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"@
 
 # COPY ALL CONTENTS OF D:\SCRIPTS TO C:\SOURCES :
 try {
@@ -89,8 +92,17 @@ Log-Message "Installed Powershell Module 'PSWindowsUpdate' to enable Windows Upd
 Log-Message "Beginning Windows updates installation. System will monitor progress and reboot when required. Please see progress bar at the top of the screen."  
 $winupdateResult = Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -ErrorAction Continue 2>&1 | Out-String
 	Log-Message "Installed additional Windows updates: `n$winupdateResult"
-Start-Sleep -Seconds 60 
+Log-Message @"
+`n            
+~~~~~~~~~~~~~~
+End of part 1. 
+~~~~~~~~~~~~~~
+"@
+Write-Host "Installed Windows updates. Rebooting PC in 10 seconds..." -ForegroundColor Green
+Start-Sleep -Seconds 10
+Restart-Computer -Force 
 
+<#
 function Force-RestartAfterUpdates {
     Write-Host "Monitoring Windows Update installation..." -ForegroundColor Cyan
 $UpdatesPending = $true
@@ -113,3 +125,4 @@ $UpdatesPending = $true
 }
 #run function: 
 Force-RestartAfterUpdates
+#>

@@ -17,8 +17,12 @@ if ($displayMessage) {
    Write-Host "$logEntry" -ForegroundColor Yellow
 }  Add-Content -Path $logFile -Value $logEntry }
 	# START LOGGING:
-Log-Message "~~~~~"
-Log-Message "New Setup Part 4 Script has started here."
+Log-Message @"
+`n            
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+New Setup Part 4 Script has started here.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"@
 
 ### REMOVE CURRENT REG KEY for NEW_SETUP_PART_4.PS1
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
@@ -76,16 +80,25 @@ Rename-Computer -NewName $newName -Force
 }
 
 # End logging to setup log file.
-Log-Message "End of Part 4 setup script."
+Log-Message @"
+`n            
+~~~~~~~~~~~~~~
+End of part 4. 
+~~~~~~~~~~~~~~
+"@
 
 #COPY SETUP LOG TO ITNGADMIN DESKTOP FOR REVIEW. 
 $sourceFile = "C:\Sources\New_Setup_LOG.txt" 
 $destinationFolder = "C:\Users\ITNGAdmin\Desktop\"
-    Log-Message "~~~~~~"
-    Log-Message "Copied all content from $sourceFile folder to $destinationFolder" 
-	Log-Message "Removed C:\Sources folder from this system as final cleanup task."
-    Log-Message "~~~~~~"
-    Log-Message "All commands have been run and system is set to standard configuration. Please check the C:\Sources\New_Setup_LOG.txt for complete setup log information."
+Log-Message @"
+`n
+Copied all content from $sourceFile folder to $destinationFolder" 
+Removed C:\Sources folder from this system as final cleanup task."
+`n
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+All commands have been run and system is set to standard configuration. 
+Please check the C:\Sources\New_Setup_LOG.txt for complete setup log information."
+"@
 Start-Sleep -Seconds 2
 Copy-Item -Path $sourceFile -Destination $destinationFolder -Force
 Remove-Item -Path "C:\Sources" -Recurse -Force
