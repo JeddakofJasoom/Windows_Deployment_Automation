@@ -1,0 +1,1 @@
+Powershell.exe -NoExit -ExecutionPolicy Bypass -File ".\application installer.ps1" -Verb RunAs 

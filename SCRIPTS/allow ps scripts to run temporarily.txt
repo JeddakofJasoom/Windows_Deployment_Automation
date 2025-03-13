@@ -1,0 +1,3 @@
+#run PS as admin, then run this command:
+
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process

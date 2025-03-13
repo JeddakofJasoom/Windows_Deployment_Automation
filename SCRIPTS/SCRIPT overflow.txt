@@ -1,0 +1,92 @@
+answer file - 
+	wipes boot drive
+	formats partitions on boot drive
+	installs W11 24H2
+	bypasses OOBE setup
+	creates itngadmin user with "password" password
+- auto login as itngadmin (from <autologon>) 
+- script 0 - 
+	waits 1 minute to pull IP from DHCP
+	disable auto screen lock 
+	add reg key to run script 1 on next login
+	set power config to prevent sleep
+	wait 5 minutes for initial windows updates to install 
+	force reboot
+- auto login as admin (from <autologon>) 	
+- script 1 - 
+	disable auto screen lock to monitor script progress
+	create C:\Sources folder
+	create C:\sources\new_setup_log.txt log file
+	create logging function
+	copy d:\Scripts folder to C:\sources
+	delete reg key to run script 1 on next login
+	add reg key to run script 2 on next login
+	set power config (can't get laptops to work yet have to do manual laptops)
+	Install Nuget from Msoft (.NET requirement)
+	install ps module to run winupdate through PS
+	Run and install windows updates
+	Wait 3 minutes, then start function to monitor update install:
+		writes to log file the installed updates
+		Checks every 30 seconds for "reboot required" status
+		Reboots PC when reboot required
+- auto login as admin (from <autologon>) 
+- script 2 -
+	create logging function
+	delete reg key to run script 2 on next login 
+	add reg key to run script 3 on next login
+	set power config (2nd pass) 
+	disable ipv6 on net adapters
+	set network to private on adapters
+	enable windows firewall
+	add port 3389 RDP allow fw rule
+	enable RDP with NLA required
+	set boot menu to 5 second startup delay 
+		(for easier BIOS access for us)
+	auto reboot after system fail
+	set debug info to none
+	set time zone to EST
+	Resync time clock (force update)
+	install WMIC.exe 
+	run winget to install: 
+		Powershell 7, Chrome, Dell Command, Adobe Reader
+	update apps through winget
+	install office 365
+	Run and install windows updates (2nd pass)
+	wait 5 seconds
+	force reboot
+- auto login as admin (from <autologon>) 
+- script 3 -
+	create logging function
+	delete reg key to run script 3 on next login 
+	add reg key to auto run script 4
+	user profile settings changes:
+		disable news & interests on taskbar
+		disable widgets
+		disable windows search web results
+		taskbar align to left 
+		disable taskview 
+		set numlock always on
+	import default apps settings 
+		dism import .xml 
+		.html = Chrome
+		.pdf = Adobe
+		mailto = OUTLOOK
+		.eml = OUTLOOK
+	update AV signature
+	run dell command (1st pass)
+	wait 5 seconds 
+	force reboot
+- auto login as admin (from <autologon>) 
+- script 4 -
+	create logging function
+	remove reg key to run script 4 on next login
+	remove reg key to auto screen unlock 
+	run dell command (2nd pass)
+	run dism and sfc
+	remove reg key to run script 4 on next login (2nd pass)
+	prompt MANUAL input to FORCE itngadmin default password change
+		note: current default password is set to "password" 
+	prompt MANUAL input (optional) for computer name change
+	copies the setup log file to itngadmin\desktop
+	removes the c:\sources folder 
+	opens the setup log file in notepad for final review. 
