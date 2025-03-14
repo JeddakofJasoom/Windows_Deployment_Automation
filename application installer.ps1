@@ -1,25 +1,30 @@
 	
 #####Install 'NuGet' package if missing from system, depending on Windows version.#####
 if ( -not ( Get-PackageProvider -ListAvailable | Where-Object Name -eq "Nuget" ) ) {
-        Write-Host "Installing latest version of 'NuGet' package from Microsoft" -ForegroundColor Yellow
+        Write-Host "'NuGet' package is not installed on this system. Installing latest version of 'NuGet' package from Microsoft" -ForegroundColor Yellow
 		$null = Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
     }
-	
+else {
+	Write-Host "Launching GUI window to install applications using winget in 5 seconds. Multi-Select IS allowed." -ForegroundColor Yellow
+	Write-Host "Launching GUI window in 5 seconds..." -ForegroundColor Red
+	Start-Sleep -Seconds 5
+}
+
 ###RUN WINGET TO INSTALL SPECIFIC APPLICATIONS.###
 
 # Define the applications to install (name and corresponding winget package)
 $apps = @(
 [PSCustomObject]@{Name="Adobe Acrobat PRO"; Package="adobe.acrobat.Pro"},
 [PSCustomObject]@{Name="Adobe Acrobat Reader"; Package="adobe.acrobat.reader.64-bit"},
-[PSCustomObject]@{Name="Autodesk Desktop (CAD viewer)"; Package="AutoDesk.DesktopApp "},
+[PSCustomObject]@{Name="Autodesk Desktop (CAD viewer)"; Package="AutoDesk.DesktopApp"},
 [PSCustomObject]@{Name="Bluebeam Revu 20"; Package="Bluebeam.Revu.20"},
 [PSCustomObject]@{Name="Bluebeam Revu 21"; Package="Bluebeam.Revu.21"},
 [PSCustomObject]@{Name="BluebeamOCR 21"; Package="Bluebeam.BluebeamOCR.21"},
 [PSCustomObject]@{Name="Cisco Webex"; Package="Cisco.Webex"},
-[PSCustomObject]@{Name="Datto Workplace (version 10) "; Package="Datto.Workplace "},
+[PSCustomObject]@{Name="Datto Workplace (version 10) "; Package="Datto.Workplace"},
 [PSCustomObject]@{Name="Dell Command Update"; Package="Dell.CommandUpdate"},
 [PSCustomObject]@{Name="Dropbox"; Package="Dropbox.Dropbox"},
-[PSCustomObject]@{Name="DW Spectrum"; Package="DW.Spectrum.Client "},
+[PSCustomObject]@{Name="DW Spectrum"; Package="DW.Spectrum.Client"},
 [PSCustomObject]@{Name="Firefox"; Package="Mozilla.Firefox"},
 [PSCustomObject]@{Name="Google Chrome"; Package="Google.Chrome"},
 [PSCustomObject]@{Name="Google.Earth"; Package="Google.EarthPro"},
@@ -31,7 +36,7 @@ $apps = @(
 [PSCustomObject]@{Name="Splashtop Streamer"; Package="Splashtop.SplashtopStreamer"},
 [PSCustomObject]@{Name="VLC Media Player"; Package="VideoLAN.VLC"},
 [PSCustomObject]@{Name="Zoom Workplace"; Package="Zoom.Zoom"},
-[PSCustomObject]@{Name="7-Zip"; Package="7zip.7zip "}
+[PSCustomObject]@{Name="7-Zip"; Package="7zip.7zip"}
 # Uncomment and add more applications as needed:
 #	[PSCustomObject]@{Name=" "; Package=" "}
 #	[PSCustomObject]@{Name=" "; Package=" "}
@@ -45,10 +50,13 @@ $selectedApps = $apps | Out-GridView -Title "Select Applications to Install" -Pa
 # Install selected applications
 foreach ($app in $selectedApps) {
     Write-Host "Installing: $($app.Name)" -ForegroundColor Cyan
-    winget.exe install $app.Package --scope machine --silent --accept-source-agreements
+    winget.exe install $app.Package --scope machine --silent --accept-source-agreements --include-unknown
 }
-Write-Host "Installation of SELECTED software via winget completed." -ForegroundColor Green
-Write-Host "Updating all software to latest version." -ForegroundColor Cyan
+Write-Host "`nInstallation of the following applications via WinGet completed:`n" -ForegroundColor Green
+Write-Host "$($selectedApps.Name -join "`n")" -ForegroundColor Green
+Write-Host "`nUpdating ALL software to latest version via winget." -ForegroundColor Red
+Write-Host "`nThe following lists available updates and will be installed automatically:`n" -ForegroundColor Green
+Start-Sleep -Seconds 5
 winget.exe upgrade --all
 
 

@@ -1,0 +1,1 @@
+powershell.exe -command "Start-Process powershell -Verb RunAs -ArgumentList '-NoExit', '-ExecutionPolicy unrestricted', '-file \"%~dp0new_setup_part_0.ps1"'" 

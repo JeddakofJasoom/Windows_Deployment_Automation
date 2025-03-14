@@ -1,1 +1,0 @@
-Powershell.exe -NoExit -ExecutionPolicy Bypass -File "D:\Scripts\new_setup_part_1.ps1" -Verb RunAs 

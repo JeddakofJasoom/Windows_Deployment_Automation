@@ -1,0 +1,128 @@
+# ==========================
+# Function Execution: Start-CustomFunction
+# ==========================
+Start-CustomFunction 
+
+
+### MAKES A GUI POPUP!!!!!!!!: #######
+Get-AppxPackage | Out-GridView -PassThru | Remove-AppxPackage
+#######
+
+
+#region run PS script as batch file
+
+# run PS script as .BAT file (as admin): 
+powershell.exe -command "Start-Process powershell -Verb RunAs -ArgumentList '-NoExit', '-ExecutionPolicy unrestricted', '-file \"%~dp0application installer.ps1"'" 
+
+<# NOTES:
+
+- to force PS script to run as admin add '-Verb RunAs' to any command inside the "" 
+- The above command is used as a batch file to run a script as an admin by double clicking on the batch file icon. 
+- The < \"%~dp0 > is for setting the target file in the current directory if you put the batch file in the same dir as the script. 
+	- Can't use .\ in this case, but \"%~dp0 will always escape the \ and then set the current directory as the file path for the script.
+
+#>
+#endregion run PS script as batch file
+
+
+#region modify files and directory names
+
+# Recursive file suffix change - tested and it works beautifully.
+$folderPath = "C:\path\to\your\folder"  # Change this to your target folder
+$oldSuffix = "_old"   # Change this to the portion to be replaced
+$newSuffix = "_new"   # Change this to the new portion
+
+Get-ChildItem -Path $folderPath -File | ForEach-Object {
+    $newName = $_.BaseName -replace "$oldSuffix$", "$newSuffix"  # Replace only if it's at the end
+    $newFullName = "$newName$($_.Extension)"
+    
+    Rename-Item -Path $_.FullName -NewName $newFullName -Force
+}
+
+
+#endregion modify files and directory names
+
+
+#region errors on screen 
+
+#####stop script and throw error on screen. - tested and it works. 
+try {
+    Get-Process -Name "test" -ErrorAction Stop
+} catch {
+    # Log the error and stop the script
+    Write-Host "ERROR: $($_.Exception.Message)" -ForegroundColor Red
+	#You can add the throw if you want the standard verbose error from PS including the line and character error:
+    #throw "Script function has terminated due to CRITICAL ERROR: $($_.Exception.Message)."
+}
+
+#endregion errors on screen
+
+
+
+#region log files 
+
+#sends all output results to log file 
+*> "C:\Logs\WindowsUpdate.log"
+
+
+# Ensures log file exists but does NOT overwrite
+if (-not (Test-Path $logFile)) {
+    New-Item -ItemType File -Path $logFile -Force | Out-Null
+}
+# Append new log entry
+"$(Get-Date) - Script started." | Out-File -FilePath $logFile -Append
+
+# Install Microsoft.UI.Xaml
+dism /Online /Add-ProvisionedAppxPackage /PackagePath:"D:\Scripts\Microsoft.UI.Xaml.2.8.appx" /SkipLicense
+
+# Install Winget
+dism /Online /Add-ProvisionedAppxPackage /PackagePath:"D:\Scripts\winget.msixbundle" /SkipLicense
+
+
+# Function to log messages and display them
+function Log-Message {
+    param (
+        [string]$message,       # The main message to log
+        [string]$displayMessage # Custom message to display (optional)
+    )
+
+    # Define timestamp and format log entry
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $logEntry = "$timestamp - $message"
+
+    # If a custom display message is provided, show it along with the log entry
+    if ($displayMessage) {
+        Write-Host "$displayMessage`n$logEntry" -ForegroundColor Yellow
+    } else {
+        Write-Host "$logEntry" -ForegroundColor Yellow
+    }
+
+    # Append message to log file
+    Add-Content -Path $logFile -Value $logEntry
+}
+
+#endregion
+
+
+#region auto logons
+
+### SETS AUTO LOGIN AS ".\Administrator" ON NEXT LOGIN
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon"
+Set-ItemProperty -Path $RegPath -Name "DefaultDomainName" -Value ""
+Set-ItemProperty -Path $RegPath -Name "DefaultUsername" -Value ".\Administrator"
+Set-ItemProperty -Path $RegPath -Name "DefaultPassword" -Value "password"
+Set-ItemProperty -Path $RegPath -Name "AutoAdminLogon" -Value "1"
+Set-ItemProperty -Path $RegPath -Name "ForceAutoLogon" -Value "1"
+# prevents screen from locking on auto login to monitor running script processes:
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Personalization" -Force
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -Value "1"
+
+### RUN "LogonScript.PS1" ON NEXT LOGON
+New-Item -path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion" -name "RunOnce" -Force
+$ScriptPath = "PathToDir\LogonScript.PS1"  # UPDATE TO NEXT SCRIPT NUMBER
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
+$ScriptCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$ScriptPath`" -Verb RunAs"
+Set-ItemProperty -Path $RegPath -Name "AutoRunLogonScript" -Value $ScriptCommand
+
+#endregion auto logons
+

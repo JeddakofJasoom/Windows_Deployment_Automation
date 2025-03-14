@@ -1,0 +1,1 @@
+powershell.exe -command "Start-Process powershell -Verb RunAs -ArgumentList '-NoExit', '-ExecutionPolicy unrestricted', '-file \"%~dp0application installer.ps1"'" 

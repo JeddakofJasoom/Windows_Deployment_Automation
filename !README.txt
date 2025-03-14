@@ -21,9 +21,9 @@ AS of 03/12/2025 the required installers to be included in your "Scripts" folder
 - DefaultApps.XML
 
 
-The standard batch file to run the installer script is:
+The standard batch file to run the installer script (as an admin) is:
 
-	Powershell.exe -NoExit -ExecutionPolicy Bypass -File "D:\Sources\new_setup_part_0.ps1" 
+	powershell.exe -command "Start-Process powershell -Verb RunAs -ArgumentList '-NoExit', '-ExecutionPolicy unrestricted', '-file \"%~dp0new_setup_part_0.ps1"'" 
 
 *** IMPORTANT NOTE ***: each part of the script is set to run the next part on the next logon. HOWEVER, the autologons are configured through the autounattend.XML file. If you run this outside of the answer file, you'll have to manually login to the local admin account for each part. 
 
