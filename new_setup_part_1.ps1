@@ -98,11 +98,8 @@ Log-Message @"
 End of part 1. 
 ~~~~~~~~~~~~~~
 "@
-Write-Host "Installed Windows updates. Rebooting PC in 10 seconds..." -ForegroundColor Green
-Start-Sleep -Seconds 10
-Restart-Computer -Force 
 
-<#
+
 function Force-RestartAfterUpdates {
     Write-Host "Monitoring Windows Update installation..." -ForegroundColor Cyan
 $UpdatesPending = $true
@@ -125,4 +122,4 @@ $UpdatesPending = $true
 }
 #run function: 
 Force-RestartAfterUpdates
-#>
+
