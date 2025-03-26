@@ -50,7 +50,7 @@
 					<CreatePartitions>
 						<CreatePartition wcm:action="add">
 							<Order>1</Order>
-							<Size>450</Size>
+							<Size>1200</Size>
 							<Type>Primary</Type>
 						</CreatePartition>
 						<CreatePartition wcm:action="add">
