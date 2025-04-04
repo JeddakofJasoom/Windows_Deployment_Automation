@@ -50,7 +50,9 @@
 					<CreatePartitions>
 						<CreatePartition wcm:action="add">
 							<Order>1</Order>
-							<Size>450</Size>
+							<!-- NOTE: 24H2 changed the recovery partition size from the standard 450MB to a now required 1200MB -->
+							<!-- If you do not adjust this size to 1200MB, it will automatically create a second recovery partition during install -->
+							<Size>1200</Size>
 							<Type>Primary</Type>
 						</CreatePartition>
 						<CreatePartition wcm:action="add">
@@ -134,7 +136,7 @@
 		<UserAccounts>
             <LocalAccounts>
                 <LocalAccount wcm:action="add">
-                    <Name>ITNGAdmin</Name>
+                    <Name>Admin</Name>
                     <Group>Administrators</Group>
                     <Password>
                         <Value>password</Value>
@@ -149,13 +151,17 @@
             </Password>
 			<Domain></Domain>
             <Enabled>true</Enabled>
-            <LogonCount>7</LogonCount>
-			<Username>ITNGAdmin</Username>
+            <LogonCount>7</LogonCount> 
+		<!-- IMPORTANT NOTE: -->
+		<!-- The 24H2 install process somehow 'logs on' twice during the install process as a base. -->
+		<!-- You must add 2 to the actual logoncount you want to have in your answer file for it to work. --> 
+			<Username>Admin</Username>
         </AutoLogon>
 <FirstLogonCommands>
 	<SynchronousCommand wcm:action="add">
 		<Order>1</Order>
 		<Description>Run New Setup Part 0 Script</Description>
+		<!-- runs a powershell script in the USB install drive as an administrator. The -Verb RunAs will launch it as admin. -->
 		<CommandLine>powershell.exe -NoExit -ExecutionPolicy Bypass -File "D:\Scripts\new_setup_part_0.ps1" -Verb RunAs</CommandLine>
 	</SynchronousCommand>
 </FirstLogonCommands>
